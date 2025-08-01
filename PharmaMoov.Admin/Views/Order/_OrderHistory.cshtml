@@ -1,0 +1,76 @@
+﻿
+<thead class="thead-light">
+    <tr>
+        <th class="th-sm font-weight-bold" hidden>
+            Identifiant de commande
+        </th>
+        <th class="th-sm font-weight-bold">
+            Pièce d'identité
+        </th>
+        <th class="th-sm font-weight-bold">
+            Nom du client
+        </th>
+        <th class="th-sm font-weight-bold">
+            Montant total
+        </th>
+        <th class="th-sm font-weight-bold">
+            Type de livraison
+        </th>
+        <th class="th-sm font-weight-bold">
+            Date de livraison
+        </th>
+        <th class="th-sm font-weight-bold">
+            Status
+        </th>
+        <th class="th-sm font-weight-bold">
+            Action
+        </th>
+    </tr>
+</thead>
+
+@if (Model != null)
+{
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td hidden>@item.OrderID</td>
+                <td>@item.OrderReferenceID</td>
+                <td class="text-capitalize">@item.CustomerName</td>
+                <td>€ @item.OrderGrossAmount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)</td>
+
+                @if (item.DeliveryTypeId == PharmaMoov.Models.OrderDeliveryType.FORDELIVERY)
+                {
+                    <td>Pour livraison</td>
+                }
+                else
+                {
+                    <td>Pour ramasser</td>
+                }
+
+                <td>@item.DeliveryDate.ToString("dd MMM yyyy hh:mm tt")</td>
+
+                @if (item.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.COMPLETED)
+                {
+                    <td><a href="#" class="badge badge-success text-uppercase">Complété</a></td>
+                }
+                else if (item.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.CANCELORDER)
+                {
+                    <td><a href="#" class="badge badge-danger text-uppercase">Annulé</a></td>
+                }
+                else if (item.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.REJECTED)
+                {
+                    <td><a href="#" class="badge warning-color-dark text-uppercase">Rejetée</a></td>
+                }
+                else
+                {
+                    <td><a href="#" class="badge badge-default text-uppercase">Statut non valide</a></td>
+                }
+
+                <td class="text-center"><h5><a href="/Payment/Invoice/?orderId=@item.OrderID" target="_blank" class="text-success action-edit"><i class="fas fa-print"></i></a></h5></td>
+            </tr>
+        }
+
+    </tbody>
+}

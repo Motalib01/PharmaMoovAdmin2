@@ -1,0 +1,173 @@
+﻿@using PharmaMoov.Models.Admin
+@model List<Admin>
+
+@{
+    ViewData["Title"] = "Liste des administrateurs";
+    Layout = "~/Views/Shared/_SALayout.cshtml";
+}
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Liste des administrateurs</h3>
+        </nav>
+        <div class="col-sm-12 d-flex justify-content-end mb-3">
+            <a class="btn btn-secondary btn-rounded btn-padding mr-3" href="~/UserMgt/AddAdmin">Créer un utilisateur</a>
+            <a class="btn login-button btn-padding" id="thisExportBtn" href="#">Exporter sous excel</a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                <div class="table-responsive-sm">
+                                    <table class="table table-hover table-bordered table-striped display" id="dtAdminList">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col" class="th-sm font-weight-bold">Identifiant utilisateur</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Photo du profil</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Nom</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Email</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Rôle</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Date de création</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Statut</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model != null)
+                                            {
+                                                foreach (Admin rAdmin in Model)
+                                                {
+                                                    <tr>
+                                                        <td>@rAdmin.AdminRecordID</td>
+                                                        <td>
+                                                            @if (rAdmin.ImageUrl != null)
+                                                            {
+                                                                <img src="@rAdmin.ImageUrl" style='width:75px;height:75px;'>
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="~/img/default-img.png" style='width:75px;height:75px;'>
+                                                            }
+                                                        </td>
+                                                        <td>@rAdmin.FirstName @rAdmin.LastName</td>
+                                                        <td>@rAdmin.Email</td>
+                                                        <td>@rAdmin.UserTypeId</td>
+                                                        <td>@rAdmin.CreatedDate.GetValueOrDefault().ToString("dd MMM yyyy")</td>
+                                                        <td>
+                                                            @if (rAdmin.IsEnabled == true)
+                                                            {
+                                                                <p class="badge badge-primary text-uppercase">Actif</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                <p class="badge badge-light text-uppercase">Inactif</p>
+                                                            }
+                                                        </td>
+                                                        <td>
+                                                            <button class="btn btn-action dropdown-toggle" type="button" data-toggle="dropdown"
+                                                                    aria-haspopup="true" aria-expanded="false">
+                                                                <i class="fas fa-bars"></i>
+                                                            </button>
+                                                            <div class="dropdown-menu">
+                                                                <a class="dropdown-item" href="~/UserMgt/EditAdmin?pid=@rAdmin.AdminRecordID">Afficher / modifier l'utilisateur</a>
+                                                                @if (rAdmin.IsEnabled == true)
+                                                                {
+                                                                    <a class="dropdown-item text-gray" onclick="changeStatus(@rAdmin.AdminRecordID, false)">Marquer comme inactif</a>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <a class="dropdown-item text-gray" onclick="changeStatus(@rAdmin.AdminRecordID, true)">Marquer comme actif</a>
+                                                                }
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dtAdminList').DataTable({
+                "dom": 'Bfrtip',
+                "language": {
+                    "info": "Afficher de _START_ à _END_ sur _TOTAL_ entrées",
+                    "emptyTable": "Aucune donnée disponible dans le tableau",
+                    "infoEmpty": "Affichage 0 à 0 sur 0 entrées",
+                    "search": "Cherchez:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                },
+                "buttons": [
+                    {
+                        text: 'Excel to Export',
+                        extend: 'excelHtml5',
+                        fieldSeparator: '\t',
+                        extension: '.xlsx',
+                        attr: {
+                            id: 'exportBtn',
+                            hidden: 'hidden'
+                        },
+                        className: 'login-button btn-padding',
+                        exportOptions: {
+                            columns: [0, 2, 3, 4, 5, 6]
+                        }
+                    }
+                ],
+                "info": true,
+                "lengthChange": false
+            });
+            $('.dataTables_length').addClass('bs-select');
+
+            $("#thisExportBtn").click(function () {
+                $("#exportBtn").click();
+            });
+        });
+
+        function changeStatus(rid, stat) {
+            var parameters = {
+                RecordId: rid,
+                IsActive: stat
+            };
+
+            $.ajax(
+                {
+                    type: 'POST',
+                    url: BASEPATH + '/Admin/ChangeAdminStatus',
+                    contentType: 'application/json',
+                    data: JSON.stringify(parameters),
+                    beforeSend: function () {
+                        $("#GenericModal").modal('show');
+                        $("#GenericModalTitle").text("Merci de patienter");
+                        $("#savingGenericLoader").show();
+                    },
+                    success: function (result) {
+                        window.location.replace(BASEPATH + "/UserMgt/Admin/");
+                    },
+                    failed: function (e, x, h) {
+                        console.log(e); console.log(h); console.log(x);
+                    }
+                }
+            );
+        }
+    </script>
+}
+

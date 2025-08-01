@@ -1,0 +1,171 @@
+﻿@using PharmaMoov.Models.Orders
+@model IEnumerable<ShopOrderList>
+
+@{
+    ViewData["Title"] = "Commandes";
+}
+
+@{
+    int totalOrders = Model.Count();
+    int totalPlaced = Model.Where(x => x.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.PLACED).Count();
+    int totalINP = Model.Where(x => x.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.INPROGRESS).Count();
+    int totalRFD = Model.Where(x => x.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.READYFORDELIVERY).Count();
+    int totalOFD = Model.Where(x => x.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.OUTFORDELIVERY).Count();
+}
+
+<div class="row p-3 p-lg-3">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4 mt-4">Commandes</h3>
+        </nav>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-12">
+
+                        <ul class="nav nav-tabs rounded-0" id="myTab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+                                   aria-selected="true"><h6 class="text-black-50">Tous les ordres <span class="badge badge-dark">@totalOrders</span></h6></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-success" id="placed-tab" data-toggle="tab" href="#placed" role="tab" aria-controls="profile"
+                                   aria-selected="false"><h6 class="text-secondary">Commandes passées <span class="badge badge-secondary">@totalPlaced</span></h6></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-warning" id="ip-tab" data-toggle="tab" href="#ip" role="tab" aria-controls="profile"
+                                   aria-selected="false"><h6 class="text-warning">En cours <span class="badge badge-warning">@totalINP</span></h6></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-danger" id="ofd-tab" data-toggle="tab" href="#ofd" role="tab" aria-controls="contact"
+                                   aria-selected="false"><h6 class="text-danger">Prêt pour la livraison <span class="badge text-danger">@totalRFD</span></h6></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-primary" id="rpu-tab" data-toggle="tab" href="#rpu" role="tab" aria-controls="contact"
+                                   aria-selected="false"><h6 class="text-primary">En cours de livraison <span class="badge badge-primary">@totalOFD</span></h6></a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="ordersTabContent">
+
+                            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                <div class="table-responsive-sm">
+                                    <table class="table table-striped" width="100%" id="dtHome">
+                                        <partial name="~/Views/Order/_OrdersList.cshtml" model="@Model" />
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="placed" role="tabpanel" aria-labelledby="placed-tab">
+                                <div class="table-responsive-sm">
+                                    <table class="table table-striped" width="100%" id="dtPlaced">
+                                        <partial name="~/Views/Order/_OrdersList.cshtml" model="@Model.Where(x => x.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.PLACED)" />
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="ip" role="tabpanel" aria-labelledby="ip-tab">
+                                <div class="table-responsive-sm">
+                                    <table class="table table-striped" width="100%" id="dtINProgress">
+                                        <partial name="~/Views/Order/_OrdersList.cshtml" model="@Model.Where(x => x.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.INPROGRESS)" />
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="ofd" role="tabpanel" aria-labelledby="ofd-tab">
+                                <div class="table-responsive-sm">
+                                    <table class="table table-striped" width="100%" id="dtRFDelivery">
+                                        <partial name="~/Views/Order/_OrdersList.cshtml" model="@Model.Where(x => x.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.READYFORDELIVERY)" />
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="rpu" role="tabpanel" aria-labelledby="rpu-tab">
+                                <div class="table-responsive">
+                                    <table class="table table-striped mt-4" width="100%" id="dtOFDelivery">
+                                        <partial name="~/Views/Order/_OrdersList.cshtml" model="@Model.Where(x => x.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.OUTFORDELIVERY)" />
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dtHome').DataTable({
+                info: true, "language": {
+                    "info": "Afficher de _START_ à _END_ sur _TOTAL_ entrées",
+                    "emptyTable": "Aucune donnée disponible dans le tableau",
+                    "infoEmpty": "Affichage 0 à 0 sur 0 entrées",
+                    "search": "Cherchez:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                }, lengthChange: false, "order": [[0, "desc"]] });
+            $('#dtPlaced').DataTable({
+                info: true, "language": {
+                    "info": "Afficher de _START_ à _END_ sur _TOTAL_ entrées",
+                    "emptyTable": "Aucune donnée disponible dans le tableau",
+                    "infoEmpty": "Affichage 0 à 0 sur 0 entrées",
+                    "search": "Cherchez:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                }, lengthChange: false, "order": [[0, "desc"]] });
+            $('#dtINProgress').DataTable({
+                info: true, "language": {
+                    "info": "Afficher de _START_ à _END_ sur _TOTAL_ entrées",
+                    "emptyTable": "Aucune donnée disponible dans le tableau",
+                    "infoEmpty": "Affichage 0 à 0 sur 0 entrées",
+                    "search": "Cherchez:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                }, lengthChange: false, "order": [[0, "desc"]] });
+            $('#dtRFDelivery').DataTable({
+                info: true, "language": {
+                    "info": "Afficher de _START_ à _END_ sur _TOTAL_ entrées",
+                    "emptyTable": "Aucune donnée disponible dans le tableau",
+                    "infoEmpty": "Affichage 0 à 0 sur 0 entrées",
+                    "search": "Cherchez:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                }, lengthChange: false, "order": [[0, "desc"]] });
+            $('#dtOFDelivery').DataTable({
+                info: true, "language": {
+                    "info": "Afficher de _START_ à _END_ sur _TOTAL_ entrées",
+                    "emptyTable": "Aucune donnée disponible dans le tableau",
+                    "infoEmpty": "Affichage 0 à 0 sur 0 entrées",
+                    "search": "Cherchez:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                }, lengthChange: false, "order": [[0, "desc"]] });
+            $('.dataTables_length').addClass('bs-select');
+        });
+    </script>
+}

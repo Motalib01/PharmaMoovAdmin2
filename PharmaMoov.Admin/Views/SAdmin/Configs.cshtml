@@ -1,0 +1,172 @@
+﻿@using PharmaMoov.Models.Orders;
+@model List<OrderConfiguration>
+@{
+    ViewData["Title"] = "Paramétrage des configurations";
+    Layout = "~/Views/Shared/_SALayout.cshtml";
+}
+<partial name="~/Views/Shared/_GenericModal.cshtml" />
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">
+                Configuration du système
+            </h3>
+        </nav>
+        <div class="card">
+            <form asp-controller="SAdmin" asp-action="Configs" method="post" role="form">
+                <div class="card-body">
+                    @if (Model != null)
+                    {
+                        for (int i = 0; i < Model.Count; i++)
+                        {
+                            @Html.HiddenFor(x => Model[i].OrderConfigId)
+                            @Html.HiddenFor(x => Model[i].ConfigType)
+                            @Html.HiddenFor(x => Model[i].LastEditedBy)
+                            @Html.HiddenFor(x => Model[i].CreatedBy)
+                            @Html.HiddenFor(x => Model[i].CreatedDate)
+                            @Html.HiddenFor(x => Model[i].DateEnabled)
+                            @Html.HiddenFor(x => Model[i].IsEnabled)
+                            if (Model[i].ConfigType == PharmaMoov.Models.OrderConfigType.COMMISSIONRATE)
+                            {
+                    <h5 class="mt-5 mb-3">Taux de commission de PharmaMoov</h5>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <p>
+                                            Définissez le taux de commission de
+                                            PharmaMoov en pourcentage.
+                                        </p>
+                                        <input asp-for="@Model[i].ConfigDecValue" value="0.15" readonly type="number" class="form-control">
+                                        <span id="#error-msg" class="label-error text-danger small"></span>
+                                        <br />
+                                        <button class="btn update-button login-button mr-3 btn-padding" type="button">Mise à jour</button>
+                                    </div>
+                                </div>
+                            }
+                            else if (Model[i].ConfigType == PharmaMoov.Models.OrderConfigType.MINORDER)
+                            {
+                <h5 class="mt-5 mb-3">Configuration de la commande</h5>
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <p>
+                                            Montant minimum de la commande
+                                            (€)
+                                        </p>
+                                        <input asp-for="@Model[i].ConfigDecValue" type="number" class="form-control">
+                                        <span id="#error-msg" class="label-error text-danger small"></span>
+                                        <br />
+                                        <button class="btn update-button login-button mr-3 btn-padding" type="button">Mise à jour</button>
+                                    </div>
+                                </div>
+                            }
+                            else //(Model[i].ConfigType == PharmaMoov.Models.OrderConfigType.NORMALDELIVERYFEEINPARIS)
+                            {
+                                
+                                        @if (Model[i].ConfigType == PharmaMoov.Models.OrderConfigType.NORMALDELIVERYFEEINPARIS)
+                                        {
+                <h5 class="mt-5 mb-3">Types de frais de livraison</h5>
+                                
+                <p>
+                    Fixer des frais de montant pour chaque
+                    type de livraison
+                </p>
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <p>Frais de livraison normaux à Paris:</p>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="input-group mb-3">
+                                                        <input asp-for="@Model[i].ConfigDecValue" type="number" class="form-control">
+                                                        <div class="input-group-append">
+                                                            <span class="input-group-text bg-primary text-light" id="basic-addon2">Euros</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+
+                                        @if (Model[i].ConfigType == PharmaMoov.Models.OrderConfigType.GREENDELIVERYINPARIS)
+                                        {
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <p>Frais de livraison écologique à Paris:</p>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="input-group mb-3">
+                                                        <input asp-for="@Model[i].ConfigDecValue" type="number" class="form-control">
+                                                        <div class="input-group-append">
+                                                            <span class="input-group-text bg-primary text-light" id="basic-addon2">Euros</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+
+                                        @if (Model[i].ConfigType == PharmaMoov.Models.OrderConfigType.NORMALDELIVERYFEEOUTPARIS)
+                                        {
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <p>
+                                                        Frais de livraison normaux en dehors
+                                                        de Paris:
+                                                    </p>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="input-group mb-3">
+                                                        <input asp-for="@Model[i].ConfigDecValue" type="number" class="form-control">
+                                                        <div class="input-group-append">
+                                                            <span class="input-group-text bg-primary text-light" id="basic-addon2">Euros</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+
+                                        @if (Model[i].ConfigType == PharmaMoov.Models.OrderConfigType.GREENDELIVERYOUTPARIS)
+                                        {
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <p>
+                                                        Frais de livraison écologique en dehors
+                                                        de Paris:
+                                                    </p>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="input-group mb-3">
+                                                        <input asp-for="@Model[i].ConfigDecValue" type="number" class="form-control">
+                                                        <div class="input-group-append">
+                                                            <span class="input-group-text bg-primary text-light" id="basic-addon2">Euros</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <span id="#error-msg" class="label-error text-danger small"></span>
+                                            <button class="btn update-button login-button mr-3 btn-padding" type="button">Mise à jour</button>
+                                        }
+
+                            }
+                        }
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} 
+    <script type="text/javascript"> 
+        $(document).ready(function (){ 
+            $(".update-button").on("click", function () {
+                document.querySelector('form').submit();
+            });
+            var showModal = $("#ShowGenericModal").val(); 
+            if (showModal == 1)
+            {
+                $("#GenericModal").modal('show');
+                $("#successIcon").show();
+                $("#successBtn").show();
+            }
+        });
+    </script>
+}

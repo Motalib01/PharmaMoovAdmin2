@@ -1,0 +1,217 @@
+﻿@using PharmaMoov.Models.Shop
+@model IEnumerable<ShopDocument>
+
+@{
+    ViewData["Title"] = "Documents";
+
+    if (ViewBag.IsSuperAdmin == true)
+    {
+        Layout = "~/Views/Shared/_SALayout.cshtml";
+    }
+}
+
+<partial name="~/Views/Shared/_GenericModal.cshtml" />
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Documents</h3>
+        </nav>
+        <div class="card">
+            <div class="card-body">
+                @if (ViewBag.IsSuperAdmin != true)
+                {
+                    <div class="row">
+
+                        <div class="col-sm-10">
+                            <div class="form-group">
+                                <label>Télécharger des documents</label>
+
+                                @* hidden form fields *@
+                                <input style="display:none;" id="FilePath">
+                                <input style="display:none;" id="FileName">
+                                <input style="display:none;" id="FileType">
+                                <input style="display:none;" id="FileSize">
+
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="UploadDocument" accept=".pdf">
+                                        <label class="custom-file-label" for="UploadDocument">Rechercher</label>
+                                    </div>
+                                </div>
+                                <small class="form-text text-muted">
+                                    (Exigences : Type .PDF UNIQUEMENT, Taille max. Taille 2MB)
+                                </small>
+                                <span class="error-msg small text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-2 mt-4">
+                            <button class="btn login-button mr-3 btn-padding pharma-bg-green" type="button" onclick='submitDocs();'>Télécharger</button>
+                        </div>
+                    </div>
+                }
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        @*<h5 class="mt-3">Fichiers</h5>*@
+                        <div class="table-responsive-sm">
+                            <table id="dtDocuments" class="table table-hover table-bordered table-striped display">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th class="th-sm font-weight-bold">
+                                            Nom du fichier
+                                        </th>
+                                        <th class="th-sm font-weight-bold">
+                                            Date de publication
+                                        </th>
+                                        <th class="th-sm font-weight-bold">
+                                            Taille du fichier
+                                        </th>
+                                        <th class="th-sm font-weight-bold">
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @if (Model != null)
+                                    {
+                                        foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td><i class="fas fa-file-alt mr-3"></i> @item.FileName</td>
+                                                <td>@(item.CreatedDate.HasValue ? item.CreatedDate.Value.ToString("MMMM dd, yyyy") : "--/--/----")</td>
+                                                <td><p>@item.FileSize</p></td>
+                                                <td>
+                                                    <button class="btn btn-action dropdown-toggle mr-4" type="button" data-toggle="dropdown"
+                                                            aria-haspopup="true" aria-expanded="false">
+                                                        <i class="fas fa-bars"></i>
+                                                    </button>
+                                                    <div class="dropdown-menu">
+                                                        <a class="dropdown-item" href="@Url.Action("DownloadFile", "Shop", new { path = item.FilePath, name = item.FileName })">Télécharger</a>
+                                                        <a class="dropdown-item text-danger" onclick='deleteDoc(@item.ShopDocumentID);'>Supprimer</a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dtDocuments').DataTable({
+                "info": false,
+                "lengthChange": false,
+                "searching": false,
+                "language": {
+                    "info": "Afficher de _START_ à _END_ sur _TOTAL_ entrées",
+                    "emptyTable": "Aucune donnée disponible dans le tableau",
+                    "infoEmpty": "Affichage 0 à 0 sur 0 entrées",
+                    "search": "Cherchez:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                },
+            });
+            $('.dataTables_length').addClass('bs-select');
+        });
+
+        $("#UploadDocument").change(function () {
+            validateDocument("UploadDocument");
+        });
+
+        function submitDocs() {
+            var fpath = $('#FilePath').val();
+
+            if (fpath == '') {
+                $('.error-msg').text("Merci de sélectionner le fichier à importer");
+            }
+            else {
+                var parameters = {
+                    FileName: $("#FileName").val(),
+                    FileSize: $("#FileSize").val(),
+                    FileType: $("#FileType").val(),
+                    FilePath: $("#FilePath").val()
+                };
+
+                console.log(parameters);
+
+                $.ajax(
+                    {
+                        type: 'POST',
+                        url: BASEPATH + '/Shop/AddShopDocument',
+                        contentType: 'application/json',
+                        data: JSON.stringify(parameters),
+                        beforeSend: function () {
+                            $("#GenericModal").modal('show');
+                            $("#GenericModalTitle").text("Merci de patienter");
+                            $("#savingGenericLoader").show();
+                        },
+                        success: function (result) {
+                            if (result.statusCode == 200) {
+                                $("#GenericModal").modal('show');
+                                $("#savingGenericLoader").hide();
+                                $("#GenericModalTitle").text(result.message);
+                                $("#successIcon").show();
+                                $("#successBtn").show();
+                            }
+                            else {
+                                $('#error-msg').text(result.message);
+                            }
+                        },
+                        failed: function (e, x, h) {
+                            console.log(e); console.log(h); console.log(x);
+                        }
+                    }
+                );
+            }
+        }
+
+        function deleteDoc(sid) {
+            $.ajax(
+                {
+                    type: 'POST',
+                    url: BASEPATH + '/Shop/DeleteShopDocument',
+                    contentType: 'application/json',
+                    data: JSON.stringify(sid),
+                    beforeSend: function () {
+                        $("#GenericModal").modal('show');
+                        $("#GenericModalTitle").text("Merci de patienter");
+                        $("#savingGenericLoader").show();
+                    },
+                    success: function (result) {
+                        $("#GenericModal").modal('show');
+                        $("#savingGenericLoader").hide();
+                        $("#GenericModalTitle").text(result.message);
+                        $("#successIcon").show();
+                        $("#successBtn").show();
+                    },
+                    failed: function (e, x, h) {
+                        console.log(e); console.log(h); console.log(x);
+                    }
+                }
+            );
+        }
+
+        $("#successBtn, #errorBtn").on('click', function () {
+            window.location.replace(BASEPATH + "/Shop/Documents");
+        });
+    </script>
+}

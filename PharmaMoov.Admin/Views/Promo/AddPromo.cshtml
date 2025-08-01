@@ -1,0 +1,132 @@
+﻿@using PharmaMoov.Models.Promo
+@using PharmaMoov.Models
+@model PromoDTO
+@{
+    ViewData["Title"] = "Ajouter un code promo";
+    Layout = "~/Views/Shared/_SALayout.cshtml";
+}
+<partial name="~/Views/Shared/_GenericModal.cshtml" />
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Ajouter une nouvelle promotion</h3>
+        </nav>
+        <div class="row mt-3 mb-3">
+            <div class="col-sm-6">
+                <a href="/Promo" class="text-primary"><i class="fas fa-long-arrow-alt-left"></i> Retour</a>
+            </div>
+            <div class="col-sm-6 d-flex justify-content-end">
+                <div class="custom-control custom-switch  float-right">
+                    <input type="checkbox" class="custom-control-input check" id="customSwitch1">
+                    <label class="custom-control-label red-text" for="customSwitch1" id="lblActive">Inactif</label> 
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <form asp-controller="Promo" asp-action="AddPromo" method="post" role="form">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <input type="text" asp-for="IsEnabled" value="false" style="display:none;" />
+                                <label>Nom de la promotion</label>
+                                <input type="text" class="form-control" asp-for="PromoName" placeholder="Nom de la promotion">
+                            </div>
+                            <div class="form-group">
+                                <label>Code promo</label>
+                                <input type="text" class="form-control" asp-for="PromoCode" placeholder="Code promo">
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea asp-for="PromoDescription" class="form-control" rows="5" onKeyDown="limitText(this.form.PromoDescription,this.form.countdown1,140);"
+                                          onKeyUp="limitText(this.form.PromoDescription,this.form.countdown1,140);"></textarea>
+                                <div>
+                                    <font size="1">
+                                        (Nombre de caractères maximum: 140)<br>
+                                        Il reste <input readonly type="text" name="countdown1" size="3" value="140"> caractères.
+                                    </font>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <div class="form-row">
+                                    <div class="col">
+                                        <label>Type de promotion</label>
+                                        <select class="browser-default selectpicker" asp-for="PType">
+                                            <option value="" disabled selected>Select an option</option>
+                                            <option value="1" hidden>Fixe</option>
+                                            <option value="2">Pourcentage</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <label>Montant de la promotion</label>
+                                        <input type="number" class="form-control" asp-for="PromoValue" placeholder="Montant de la promotion" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="form-row">
+                                    <div class="col">
+                                        <label>Promotion valide du </label>
+                                        <input type="date" class="form-control" asp-for="ValidFrom" />
+                                    </div>
+                                    <div class="col">
+                                        <label>Promotion valide jusqu’au</label>
+                                        <input type="date" class="form-control" asp-for="ValidTo" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4 mb-4">
+                        <div class="col-sm-12">
+                            <a class="btn white-button mr-3 btn-padding" href="~/Promo/">Annuler</a>
+                            <button class="btn login-button mr-3 btn-padding" type="submit">Soumettre</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#customSwitch1").change(function () {
+                if ($(this).prop("checked") == true) {
+                    $("#IsEnabled").val("true");
+                    $("#lblActive").text("Actif");
+                    $("#lblActive").removeClass("red-text");
+                } else {
+                    $("#IsEnabled").val("false");
+                    $("#lblActive").text("Inactif");
+                    $("#lblActive").addClass("red-text");
+                }
+            });
+
+            var showModal = $("#ShowGenericModal").val();
+            if (showModal == 1) {
+                $("#GenericModal").modal('show');
+                $("#successIcon").show();
+                $("#successBtn").show();
+            }
+
+            $("#GenericModal").on('hidden.bs.modal', function () {
+                if (showModal == 1) {
+                    window.location.replace("/Promo/Index");
+                }
+            });
+
+
+            //validate hidden fields
+            $.validator.setDefaults({
+                ignore: []
+            });
+        });
+    </script>
+}

@@ -1,0 +1,253 @@
+﻿@using PharmaMoov.Models.Shop
+@model IEnumerable<ShopList>
+
+@{
+    ViewData["Title"] = "Liste des pharmacies";
+    Layout = "~/Views/Shared/_SALayout.cshtml";
+}
+
+<partial name="~/Views/Shared/_GenericModal.cshtml" />
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Liste des pharmacies</h3>
+        </nav>
+        <div class="col-sm-12 d-flex justify-content-end mb-3">
+            @*<a class="btn login-button btn-primary border-0 btn-padding waves-effect waves-light" href="~/ShopMgt/AddShop">Créer une pharmacie</a>*@
+            <a class="btn login-button btn-padding" id="thisExportBtn" href="#">Exporter dans Excel</a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-sm-12 col-md-6">
+                        <!-- Search form -->
+                        <div class="form-inline">
+                            <input class="form-control form-control-sm mr-3 w-75" id="SearchTables" type="text" placeholder="Rechercher une pharmacie..." aria-label="Search">
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-6">
+                        <div class="form-check form-check-inline mt-2" id="PopularPharmaDiv">
+                            <label class="form-check-label mr-2" for="IsPopularChk">Afficher les pharmacies populaires</label>
+                            <input type="checkbox" name="popularList" class="form-check-input" value="True" id="IsPopularChk">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                <div class="table-responsive-sm">
+                                    <table class="table table-hover table-bordered table-striped display" id="dtMainList">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col" class="th-sm font-weight-bold">ID</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Nom de la pharmacie</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Email</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Numéro de téléphone</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Le nom du propriétaire</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Date de création</th>
+                                                <th scope="col" class="th-sm font-weight-bold" hidden>Is Popular</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Statut</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model != null)
+                                            {
+                                                @foreach (var item in Model)
+                                                {
+                                                    <tr>
+                                                        <td>@item.ShopRecordID</td>
+                                                        <td class="text-capitalize">@item.Name</td>
+                                                        <td>@item.Email</td>
+                                                        <td>+@item.ContactNumber</td>
+                                                        <td class="text-capitalize">@item.Owner</td>
+                                                        <td class="text-capitalize">@item.DateCreated.ToString("dd MMM yyyy")</td>
+                                                        <td class="text-capitalize" hidden>@item.IsPopularPharmacy</td>
+
+                                                        @if (item.Status == true)
+                                                        {
+                                                            <td><p class="badge bg-primary text-uppercase">Actif</p></td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td><p class="badge bg-danger text-uppercase">Inactif</p></td>
+                                                        }
+
+                                                        <td class="text-center">
+                                                            <button class="btn btn-action dropdown-toggle" type="button" data-toggle="dropdown"
+                                                                    aria-haspopup="true" aria-expanded="false">
+                                                                <i class="fas fa-bars"></i>
+                                                            </button>
+                                                            <div class="dropdown-menu">
+                                                                <a class="dropdown-item" href="~/ShopMgt/EditShop?sid=@item.ShopId">Modifier</a>
+                                                                <a class="dropdown-item" href="~/Product/ShopProducts?sid=@item.ShopId">Afficher la liste des produits</a>
+                                                                <a class="dropdown-item" href="~/ShopMgt/Documents?sid=@item.ShopId">Afficher les documents</a>
+
+                                                                @if (item.Status == true)
+                                                                {
+                                                                    <a class="dropdown-item" onclick="changeStatus(@item.ShopRecordID, false)">Marquer comme inactif</a>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <a class="dropdown-item" onclick="changeStatus(@item.ShopRecordID, true)">Marquer comme actif</a>
+                                                                }
+
+                                                                @if (item.IsPopularPharmacy == true)
+                                                                {
+                                                                    <a class="dropdown-item" onclick="changePopularStatus(@item.ShopRecordID, false)">Marquer comme non populaire</a>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <a class="dropdown-item" onclick="changePopularStatus(@item.ShopRecordID, true)">Marquer comme populaire</a>
+                                                                }
+
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            var dtMainList = $('#dtMainList').DataTable({
+                "info": true,
+                "lengthChange": false, 
+                "dom": 'Bfrtip',
+                "language": {
+                    "info": "Afficher de _START_ à _END_ sur _TOTAL_ entrées",
+                    "emptyTable": "Aucune donnée disponible dans le tableau",
+                    "infoEmpty": "Affichage 0 à 0 sur 0 entrées",
+                    "search": "Cherchez:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                },
+              
+                "buttons": [
+                    {
+                        text: 'Excel to Export',
+                        extend: 'excelHtml5',
+                        fieldSeparator: '\t',
+                        extension: '.xlsx',
+                        attr: {
+                            id: 'exportBtn',
+                            hidden: 'hidden'
+                        },
+                        className: 'login-button btn-padding',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3, 4, 5, 7]
+                        }
+                    }
+                ]
+            });
+
+            //Search field
+            $("#SearchTables").on('keyup click', function () {
+                dtMainList.search($("#SearchTables").val(), true, true, true).draw();
+            });
+
+            //Is Popular Filter
+            $.fn.dataTable.ext.search.push(
+                function (settings, searchData, index, rowData, counter) {
+                    var popular = $('input:checkbox[name="popularList"]:checked').map(function () {
+                        return this.value;
+                    }).get();
+
+                    if (popular.length === 0) {
+                        return true;
+                    }
+
+                    //check column 6 (IsPopular)
+                    if (popular.indexOf(searchData[6]) !== -1) {
+                        return true;
+                    }
+
+                    return false;
+                }
+            );
+
+            //redraw table 
+            $('input:checkbox').on('change', function () {
+                dtMainList.draw();
+            });
+
+            $('.dataTables_length').addClass('bs-select');
+            $('#dtMainList_filter').attr("hidden", true); //Hide the Default Filter row
+
+            $("#thisExportBtn").click(function () {
+                $("#exportBtn").click();
+            });
+        });
+
+        function changeStatus(rid, stat) {
+            var parameters = {
+                RecordId: rid,
+                IsActive: stat
+            };
+            $.ajax(
+                {
+                    type: 'POST',
+                    url: BASEPATH + '/ShopMgt/ChangeShopStatus',
+                    contentType: 'application/json',
+                    data: JSON.stringify(parameters),
+                    beforeSend: function () {
+                        $("#GenericModal").modal('show');
+                        $("#GenericModalTitle").text("Merci de patienter");
+                        $("#savingGenericLoader").show();
+                    },
+                    success: function (result) {
+                        window.location.replace(BASEPATH + "/ShopMgt");
+                    },
+                    failed: function (e, x, h) {
+                        console.log(e); console.log(h); console.log(x);
+                    }
+                }
+            );
+        }
+
+        function changePopularStatus(rid, status) {
+            var parameters = {
+                RecordId: rid,
+                IsActive: status
+            };
+            $.ajax(
+                {
+                    type: 'POST',
+                    url: BASEPATH + '/ShopMgt/ChangePopularStatus',
+                    contentType: 'application/json',
+                    data: JSON.stringify(parameters),
+                    beforeSend: function () {
+                        $("#GenericModal").modal('show');
+                        $("#GenericModalTitle").text("Merci de patienter");
+                        $("#savingGenericLoader").show();
+                    },
+                    success: function (result) {
+                        window.location.replace(BASEPATH + "/ShopMgt");
+                    },
+                    failed: function (e, x, h) {
+                        console.log(e); console.log(h); console.log(x);
+                    }
+                }
+            );
+        }
+    </script>
+}

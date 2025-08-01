@@ -1,0 +1,65 @@
+﻿@using PharmaMoov.Models.Admin;
+@model SuperAdminDashboardModel
+
+@{
+    ViewData["Title"] = "Tableau de bord";
+    Layout = "~/Views/Shared/_SALayout.cshtml";
+}
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Tableau de bord</h3>
+        </nav>
+        <div class="card">
+            <div class="card-body">
+                <div class="row p-2">
+                    <div class="col-sm-3 border">
+                        <div class="row p-3">
+                            <div class="col-sm-4 d-flex justify-content-center flex-column">
+                                <img src="~/img/d-users.png" />
+                            </div>
+                            <div class="col-sm-8 d-flex justify-content-center flex-column">
+                                <h5 class="text-success font-weight-bold m-0 p-0">@Model.TotalUser</h5>
+                                <p class="text-success m-0 p-0">Nombre total d’utilisateurs</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 border">
+                        <div class="row p-3">
+                            <div class="col-sm-4 d-flex justify-content-center flex-column">
+                                <img src="~/img/d-shops.png" />
+                            </div>
+                            <div class="col-sm-8 d-flex justify-content-center flex-column">
+                                <h5 class="m-0 p-0 font-weight-bold">@Model.TotalShop</h5>
+                                <p class="m-0 p-0">Nombre total de boutiques</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 border">
+                        <div class="row p-3">
+                            <div class="col-sm-4 d-flex justify-content-center flex-column">
+                                <img src="~/img/d-requests.png" />
+                            </div>
+                            <div class="col-sm-8 d-flex justify-content-center flex-column">
+                                <h5 class="text-danger m-0 p-0 font-weight-bold">@Model.TotalPendingRequest</h5>
+                                <p class="text-danger m-0 p-0">Requêtes en attente</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 border">
+                        <div class="row p-3">
+                            <div class="col-sm-4 d-flex justify-content-center flex-column">
+                                <img src="~/img/d-orders.png" />
+                            </div>
+                            <div class="col-sm-8 d-flex justify-content-center flex-column">
+                                <h5 class="text-warning m-0 p-0 font-weight-bold">@Model.TotalOrder</h5>
+                                <p class="text-warning m-0 p-0">Nombre total de commandes</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,144 @@
+﻿@using PharmaMoov.Models.Shop
+@model ShopCommissionDateRange
+@{
+    ViewData["Title"] = "Commission Reports";
+    Layout = "~/Views/Shared/_SALayout.cshtml";
+    List<ShopComissionDTO> shopListingModels = ViewBag.shopList as List<ShopComissionDTO>;
+}
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">
+                Commission Reports
+            </h3>
+        </nav>
+        @*<div class="col-sm-12 d-flex justify-content-end mb-3">
+            <a class="btn login-button border-0 btn-padding" href="#">Export to Excel</a>
+        </div>*@
+        <div class="card">            
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="col-form-label control-label">Rechercher : </label>
+                        <input type="text" class="form-control" id="SearchTables">
+                    </div>
+                    <div class="col-md-2"></div>
+                    <div class="col-md-6" id="dtContainer">
+                        <div class="row">
+                            <form asp-action="ShopCommisionInvoice" asp-controller="Shop" method="POST" class="row">
+                                <div class="col-md-6">
+                                    <label class="control-label">De : </label>
+                                    @Html.HiddenFor(m => m.dateFrom)
+                                    <input type="text" class="form-control thisIsADatePicker" data-provide="datepicker" id="pickTxtFrom" placeholder="Sélectionner date de début.." autocomplete="off">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="control-label">Au : </label>
+                                    <input type="text" class="form-control thisIsADatePicker" data-provide="datepicker" id="pickTxtTo" placeholder="Sélectionner date de fin.." autocomplete="off">
+                                    @Html.HiddenFor(m => m.dateTo)
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <br/>
+                <table class="table table-hover table-bordered table-striped display" id="dtShopCommission" width="100%">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="th-sm font-weight-bold">Id</th>
+                            <th class="th-sm font-weight-bold">Nom de la boutique</th>
+                            <th class="th-sm font-weight-bold">Total Commande</th>
+                            <th class="th-sm font-weight-bold">Total Ventes</th>
+                            <th class="th-sm font-weight-bold">Comission</th>
+                            <th class="th-sm font-weight-bold">Montant</th>
+                            <th class="th-sm font-weight-bold">Shop Montant</th>
+                            <th class="th-sm font-weight-bold">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (shopListingModels != null && shopListingModels.Count > 0)
+                        {
+                            foreach (ShopComissionDTO singleShop in shopListingModels)
+                            {
+                                decimal commissionInPercentage = singleShop.PharmaMoovCommission * 100;
+                                <tr>
+                                    <td>@singleShop.ShopRecordId</td>
+                                    <td>@singleShop.ShopName</td>
+                                    <td>@singleShop.TotalOrder</td>
+                                    <td>@singleShop.TotalSales</td>
+                                    <td>@commissionInPercentage.ToString().Replace(".00","") %</td>
+                                    <td>@Math.Round(singleShop.PharmaMoovAmount, 2, MidpointRounding.AwayFromZero)</td>
+                                    <td>@Math.Round(singleShop.ShopAmount, 2, MidpointRounding.AwayFromZero)</td>
+                                    <td>
+                                        <a href="/Shop/ComissionInvoiceView?shopId=@singleShop.ShopRecordId&dFrom=@Model.dateFrom.ToString().Split(' ')[0]&dTo=@Model.dateTo.ToString().Split(' ')[0]" target="_blank">
+                                            <i class="fas fa-print mr-3 ml-3"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            console.log("loaded from post date From>>>>" + $("#dateFrom").val());
+            console.log("loaded from post date To>>>>" + $("#dateTo").val());
+            var dtShopC = $('#dtShopCommission').DataTable({
+                "info": false,
+                "lengthChange": false,
+                "searching": true,
+                "sDom": 'lrtip',
+                "language": {
+                    "info": "Afficher de _START_ à _END_ sur _TOTAL_ entrées",
+                    "emptyTable": "Aucune donnée disponible dans le tableau",
+                    "infoEmpty": "Affichage 0 à 0 sur 0 entrées",
+                    "search": "Cherchez:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                },
+            });
+
+            $("#SearchTables").on('keyup click', function () {
+                console.log($("#SearchTables").val());
+                dtShopC.search($("#SearchTables").val(),true,true,true).draw();
+            });
+
+            $(".thisIsADatePicker").datepicker({
+                container: 'div#dtContainer',
+                autoclose: true,
+                format:'yyyy-mm-dd'
+            });
+
+            $(".thisIsADatePicker").on('change', (event) => {
+                var dateF = $("#pickTxtFrom").val(), dateT = $("#pickTxtTo").val();
+                console.log("DateFrom >>> " + dateF);
+                console.log("DateTo >>> " + dateT);
+                if ((dateF !== "") &&(dateT !== ""))
+                {
+                    dateF = new Date(dateF);
+                    dateT = new Date(dateT);
+                    console.log(dateF + " " + dateT);
+                    if (dateT > dateF)
+                    {
+                        console.log("DT > DF ready to submit the form! ");
+                        $("#dateFrom").val(dateF.toLocaleDateString());
+                        $("#dateTo").val(dateT.toLocaleDateString());
+
+                        console.log($("#dateFrom").val());
+                        console.log($("#dateTo").val());
+                        document.querySelector('form').submit();
+                    }
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,167 @@
+﻿@using PharmaMoov.Admin.Helpers
+@using Microsoft.AspNetCore.Http
+@using PharmaMoov.Models
+@using PharmaMoov.Models.Admin;
+@inject IHttpContextAccessor _httpCtxtAc;
+@model PaymentListParamModel
+
+@{
+    ViewData["Title"] = "Paiements";
+    ISession session = _httpCtxtAc.HttpContext.Session;
+
+    var _adminUCtxt = session.GetObjectFromJson<AdminUserContext>("adminUserContext");
+
+    if (_adminUCtxt.AdminInfo.UserTypeId == UserTypes.SUPERADMIN)
+    {
+        Layout = "~/Views/Shared/_SALayout.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+
+    List<PaymentListModel> paymentListModel = ViewBag.PaymentList as List<PaymentListModel>;
+
+}
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">
+                Paiements
+            </h3>
+        </nav>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="col-form-label control-label">Cherchez : </label>
+                        <input type="text" class="form-control" id="SearchTables">
+                    </div>
+                    <div class="col-md-2"></div>
+                    <div class="col-md-6" id="dtContainer">
+                        <div class="row">
+                            <form asp-action="Index" method="POST" class="row">
+                                <div class="col-md-6">
+                                    <label class="control-label">De : </label>
+                                    @Html.HiddenFor(m => m.DateFrom)
+                                    <input type="text" class="form-control thisIsADatePicker" data-provide="datepicker" id="pickTxtFrom" placeholder="Sélectionner date de début.." autocomplete="off">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="control-label">Au : </label>
+                                    <input type="text" class="form-control thisIsADatePicker" data-provide="datepicker" id="pickTxtTo" placeholder="Sélectionner date de fin.." autocomplete="off">
+                                    @Html.HiddenFor(m => m.DateTo)
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <table class="table table-hover table-bordered table-striped display" id="dtPayments" width="100%">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="th-sm font-weight-bold">Numéro</th>
+                            <th class="th-sm font-weight-bold">Date de Creation</th>
+                            <th class="th-sm font-weight-bold">Total Montant</th>
+                            <th class="th-sm font-weight-bold">Date de Paiment</th>
+                            <th class="th-sm font-weight-bold">Statut</th>
+                            <th class="th-sm font-weight-bold">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (paymentListModel != null && paymentListModel.Count > 0)
+                        {
+                            foreach (PaymentListModel payment in paymentListModel)
+                            {
+                                <tr>
+                                    <td>@payment.OrderId</td>
+                                    <td>@payment.CreatedDate.ToString("dd MMM yyyy")</td>
+                                    <td>&euro; @payment.TotalAmount</td>
+                                    <td>@payment.PaymentDate.ToString("dd MMM yyyy")</td>
+                                    @if (payment.Status == (int)EPaymentStatus.SUCCEEDED)
+                                    {
+                                        <td><p class="badge badge-success text-uppercase">Paid</p></td>
+                                    }
+                                    else if (payment.Status == (int)EPaymentStatus.FAILED)
+                                    {
+                                        <td><p class="badge badge-danger text-uppercase">Failed</p></td>
+                                    }
+                                    <td>
+                                        <a href="/Payment/Invoice/?orderId=@payment.OrderId" target="_blank">
+                                            <i class="fas fa-print mr-3 ml-3"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"
+            integrity="sha256-xNjb53/rY+WmG+4L6tTl9m6PpqknWZvRt0rO1SRnJzw="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" 
+            integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" 
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            console.log("loaded from post date From>>>>" + $("#DateFrom").val());
+            console.log("loaded from post date To>>>>" + $("#DateTo").val());
+            var dtPayments = $('#dtPayments').DataTable({
+                "info": false,
+                "lengthChange": false,
+                "searching": true,
+                "sDom": 'lrtip',
+                "language": {
+                    "info": "Afficher de _START_ à _END_ sur _TOTAL_ entrées",
+                    "emptyTable": "Aucune donnée disponible dans le tableau",
+                    "infoEmpty": "Affichage 0 à 0 sur 0 entrées",
+                    "search": "Cherchez:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                },
+            });
+
+            $("#SearchTables").on('keyup click', function () {
+                console.log($("#SearchTables").val());
+                dtPayments.search($("#SearchTables").val(), true, true, true).draw();
+            });
+
+            $(".thisIsADatePicker").datepicker({
+                container: 'div#dtContainer',
+                autoclose: true,
+                format: 'yyyy-mm-dd'
+            });
+
+            $(".thisIsADatePicker").on('change', (event) => {
+                var dateF = $("#pickTxtFrom").val(), dateT = $("#pickTxtTo").val();
+                console.log("DateFrom >>> " + dateF);
+                console.log("DateTo >>> " + dateT);
+                if ((dateF !== "") && (dateT !== "")) {
+                    dateF = new Date(dateF);
+                    dateT = new Date(dateT);
+                    console.log(dateF + " " + dateT);
+                    if (dateT > dateF) {
+                        console.log("DT > DF ready to submit the form! ");
+                        $("#DateFrom").val(dateF.toLocaleDateString());
+                        $("#DateTo").val(dateT.toLocaleDateString());
+
+                        console.log($("#DateFrom").val());
+                        console.log($("#DateTo").val());
+                        document.querySelector('form').submit();
+                    }
+                }
+            });
+        });
+    </script>
+}

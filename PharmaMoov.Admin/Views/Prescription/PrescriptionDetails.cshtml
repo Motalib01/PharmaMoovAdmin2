@@ -1,0 +1,585 @@
+﻿@model PharmaMoov.Models.Prescription.PrescriptionDetailAndProducts
+
+@{
+    ViewData["Title"] = "Modifier un produit";
+}
+
+<partial name="~/Views/Shared/_GenericModal.cshtml" />
+
+<div class="modal fade" id="modalEditProduct" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title w-100 font-weight-bold">Update Product</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body mx-3">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label>Original Price</label>
+                        <input type="text" id="mOrigialPrice" class="form-control" readonly>
+                    </div>
+                </div>
+
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label>Custom Unit Price</label>
+                        <input type="number" id="mUnitPrice" class="form-control" min="1">
+                    </div>
+                </div>
+
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <input type="number" id="mQuantity" class="form-control" min="1">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button class="btn login-button mr-3 btn-padding" id="submitModal" type="button">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Détails de l'ordonnance</h3>
+            <div class="mb-4">
+                <a href="/Prescription" class="text-primary"><i class="fas fa-long-arrow-alt-left"></i> Retour</a>
+            </div>
+        </nav>
+        <div class="card">
+            <form method="post">
+                <div class="card-header">
+                    <h4>Prescription Non. @Model.PrescriptionDetail.PrescriptionRecordId</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <input type="hidden" id="PrescriptionRecordId" asp-for="PrescriptionDetail.PrescriptionRecordId" >
+                        <div class="col-sm-12">
+                            <h5 class="font-weight-bold">Détails du client</h5>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Nom du client</label>
+                                <input type="text" class="form-control" placeholder="Nom du produit" asp-for="PrescriptionDetail.CustomerName" readonly>
+                                <span asp-validation-for="PrescriptionDetail.CustomerName" class="label-error text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Courriel du client</label>
+                                <input type="text" class="form-control" asp-for="PrescriptionDetail.CustomerEmail" readonly>
+                                <span asp-validation-for="PrescriptionDetail.CustomerEmail" class="label-error text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3 mb-3">
+                        <div class="col-sm-12">
+                            <h5 class="font-weight-bold">Détails de l'ordonnance</h5>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Description de la médecine</label><br />
+                                <textarea class="form-control" rows="10" asp-for="PrescriptionDetail.MedicineDescription" readonly></textarea>
+                                <span asp-validation-for="PrescriptionDetail.MedicineDescription" class="label-error text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Nom du médecin</label>
+                                <input type="text" class="form-control" asp-for="PrescriptionDetail.DoctorName" readonly />
+                                <span asp-validation-for="PrescriptionDetail.DoctorName" class="label-error text-danger small"></span>
+                            </div>
+                            <div class="form-group mt-5">
+                                <label>Ordonnance téléchargée</label><br />
+                                @{
+                                    var temp = Model.PrescriptionDetail.PrescriptionIcon.Split('.');
+
+                                    if (temp[1] == "pdf")
+                                    {
+                                        <a href="@Model.PrescriptionDetail.PrescriptionIcon" target="_blank"><u>Prescription PDF file</u></a>
+                                    }
+                                    else
+                                    {
+                                        <a href="@Model.PrescriptionDetail.PrescriptionIcon" target="_blank"><img src="@Model.PrescriptionDetail.PrescriptionIcon" class="img-thumbnail" style="max-height:150px;" /></a>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <h5 class="font-weight-bold mb-3">Recherche de produits pour la prescription</h5>
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <!-- Search form -->
+                            <div class="d-flex justify-content-between">
+                                <div class="col-sm-4">
+                                    <div class="form-inline">
+                                        <input class="form-control form-control-sm mr-3 w-75" id="SearchTables" type="text" placeholder="Recherche de produits..." aria-label="Search">
+                                        <i class="fas fa-search" aria-hidden="true"></i>
+                                    </div>
+                                </div>
+                                <div class="col-sm-5">
+                                    <div class="form-inline">
+                                        <label class="mr-4">Filtrer par catégorie: </label>
+                                        <select class="browser-default custom-select w-50" id="categoryFilter">
+                                            <option value="" selected>Sélectionnez une catégorie</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <di0v class="col-sm-3">
+                                    @if (Model.PrescriptionDetail.PrescriptionStatus == PharmaMoov.Models.PrescriptionStatus.PENDING)
+                                    {
+                                    <button id="btnAddProducts" class="btn login-button btn-padding waves-effect waves-light float-right" type="button">Ajouter les produits sélectionnés</button>
+                                    }
+                                    else
+                                    {
+                                <button class="btn login-button btn-padding float-right" type="button" disabled>Ajouter les produits sélectionnés</button>
+                                    }
+                                </di0v>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active">
+                                    <div class="table-responsive-sm">
+                                        <table class="table table-bordered table-striped" id="dtMainList">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th scope="col" class="th-sm font-weight-bold">Identifiant produit</th>
+                                                    <th scope="col" class="th-sm font-weight-bold">Image produit</th>
+                                                    <th scope="col" class="th-sm font-weight-bold">Nom de produit</th>
+                                                    <th scope="col" class="th-sm font-weight-bold">Prix</th>
+                                                    <th scope="col" class="th-sm font-weight-bold">Catégorie</th>
+                                                    <th scope="col" class="th-sm font-weight-bold">Statut</th>
+                                                    <th scope="col" class="th-sm font-weight-bold" style="width: 10%;">Selected</th>
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <h5 class="font-weight-bold mb-3">Produits prescrits sélectionnés</h5>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" role="tabpanel">
+                                    <div class="table-responsive-sm">
+                                        <table class="table table-bordered table-striped" id="dtPrescribedProducts">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th scope="col" class="th-sm font-weight-bold">Identifiant produit</th>
+                                                    <th scope="col" class="th-sm font-weight-bold">Image produit</th>
+                                                    <th scope="col" class="th-sm font-weight-bold">Nom de produit</th>
+                                                    <th scope="col" class="th-sm font-weight-bold">Prix</th>
+                                                    <th scope="col" class="th-sm font-weight-bold">Prix unitaire personnalisé</th>
+                                                    <th scope="col" class="th-sm font-weight-bold">Quantité</th>
+                                                    <th scope="col" class="th-sm font-weight-bold">Sous-total</th>
+                                                    <th scope="col" class="th-sm font-weight-bold" style="width: 15%;">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="computationDiv">
+                        <div class="col-sm-12 text-right">
+                            <p class="font-weight-bold">Sous-total: &euro; <span id="compSubtotal"></span></p>
+                            <p class="font-weight-bold">Taxe: <span id="compTax"></span></p>
+                            <p class="font-weight-bold">Total: &euro; <span id="compTotalAmt"></span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <a class="btn white-button mr-3 btn-padding" href="~/Prescription/">Annuler</a>
+                    @if (Model.PrescriptionDetail.PrescriptionStatus == PharmaMoov.Models.PrescriptionStatus.PENDING)
+                    {
+                <button class="btn login-button mr-3 btn-padding" id="SavePrescription" type="button">Créer et envoyer une facture</button>
+                    }
+                    else
+                    {
+                <button class="btn login-button mr-3 btn-padding" type="button" disabled>Créer et envoyer une facture</button>
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var selectedItem = 0
+            $('#compSubtotal').text('0.00');
+            $('#compTax').text('0.00');
+            $('#compTotalAmt').text('0.00');
+
+            //set dtMainList products Table
+        var dtProductList = $('#dtMainList').DataTable({
+                info: true,
+                lengthChange: false,
+                sDom: 'lrtip',
+                paging: true,
+                responsive: true,
+                language: {
+                    "info": "Afficher de _START_ à _END_ sur _TOTAL_ entrées",
+                    "emptyTable": "Aucune donnée disponible dans le tableau",
+                    "infoEmpty": "Affichage 0 à 0 sur 0 entrées",
+                    "search": "Cherchez:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                },
+                ajax: {
+                    url: "/Prescription/GetProductsForPrescription/0",
+                    method: "GET",
+                    xhrFields: {
+                        withCredentials: true
+                    }
+                },
+                columns: [
+                    { data: "productRecordId" },
+                    { data: "productIcon" },
+                    { data: "productName" },
+                    { data: "productPrice" },
+                    { data: "productCategoryName" },
+                    { data: "productStatus" }
+                ],
+                columnDefs: [
+                    {
+                        "targets": 1,
+                        "data": 'productIcon',
+                        "render": function (data, type, row, meta) {
+                            return '<img src="' + data + '" "height="50" width="50"/>';
+                        }
+                    },
+                    {
+                        "targets": 5,
+                        "data": 'productStatus',
+                        "render": function (data, type, row, meta) {
+                            var status = "";
+                            if (data == 1) {
+                                status = "<span class='badge badge-success text-uppercase'>En stock</span>";
+                            }
+                            else {
+                                status = "<span class='badge badge-danger text-uppercase'>Invalid</span>";
+                            }
+                            return status;
+                        }
+                    },
+                    {
+                        "targets": 6,
+                        "data": 'productRecordId',
+                        "render": function (data, type, row, meta) {
+                            return '<input type="checkbox" value="' + data + '" />';
+                        }
+                    }
+                ],
+                initComplete: function () {
+                    this.api().columns(4).every(function () {
+                        var column = this;
+
+                        var select = $('#categoryFilter')
+                            .on('change', function () {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+
+                                column.search(val ? '^' + val + '$' : '', true, false)
+                                    .draw();
+                            });
+
+                        column.data().unique().sort().each(function (d, j) {
+                            select.append('<option value="' + d + '">' + d + '</option>')
+                        });
+                    });
+                }
+            });
+
+            //Search field
+            $("#SearchTables").on('keyup click', function () {
+                dtProductList.search($("#SearchTables").val(), true, true, true).draw();
+            });
+
+            $('.dataTables_length').addClass('bs-select');
+
+            ///////////////////////////////////////
+
+            //set dtPrescribedProducts table
+            var dtPrescribedProducts = $('#dtPrescribedProducts').DataTable({
+                info: true,
+                lengthChange: false,
+                paging: false,
+                responsive: true,
+                searching: false,
+                language: {
+                    "info": "Afficher de _START_ à _END_ sur _TOTAL_ entrées",
+                    "emptyTable": "Aucune donnée disponible dans le tableau",
+                    "infoEmpty": "Affichage 0 à 0 sur 0 entrées",
+                    "search": "Cherchez:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                },
+                ajax: {
+                    url: "/Prescription/GetSelectedProductsForPrescription/",
+                    data: { 'pId': '@ViewBag.MyRouteId', },
+                    method: "GET",
+                    xhrFields: {
+                        withCredentials: true
+                    }
+                },
+                "initComplete": function (settings, json) {
+                    sessionStorage.setItem("PrescribedItems", JSON.stringify(json.data));
+                    if (json.data.length > 0) {
+                        dtPrescribedProducts.column(7).visible(false);
+                        ComputeOrder();
+                    }
+                },
+                columns: [
+                    { data: 'productRecordId' },
+                    { data: "productIcon" },
+                    { data: "productName" },
+                    { data: "productPrice" },
+                    { data: "customPrice" },
+                    { data: "quantity" },
+                    { data: "subTotal" },
+                    { data: "action" },
+                ],
+                columnDefs: [
+                    {
+                        targets: 1,
+                        render: function (data, type, row, meta) {
+                            return '<img src="' + data + '" "height="50" width="50"/>';
+                        }
+                    },
+                    {
+                        targets: 7,
+                        render: function (data, type, row, meta) {
+                            return '<button type="button" class="btn btn-link text-dark m-0 p-0 editItem" data-toggle="modal" data-target="#modalEditProduct" value="' + data + '"><i class="fas fa-edit mr-3 ml-3"></i></button> ' +
+                                '<button type="button" class="btn btn-link text-dark m-0 p-0 removeItem" value="' + data + '"><i class="fas fa-trash-alt mr-3 ml-3"></i></button>';
+                        }
+                    }
+                ],
+            });
+
+            // Add selected products to Prescribed Table
+            $('button#btnAddProducts').on('click', function () {
+                var addedProducts = []; //list of added products
+
+                $.each($("input[type='checkbox']:checked"), function () {
+                    var rowData = $(this).parents('tr:eq(0)'); //set to first column
+                    var prodId = $(this).val();
+
+                    var item = {
+                        "productRecordId": prodId,
+                        "productIcon": $(rowData).find('td:eq(1) img').attr("src"),
+                        "productName": $(rowData).find('td:eq(2)').text(),
+                        "productPrice": $(rowData).find('td:eq(3)').text(), //Get original Price
+                        "customPrice": $(rowData).find('td:eq(3)').text(),
+                        "quantity": "1",
+                        "subTotal": $(rowData).find('td:eq(3)').text(),
+                        "action": prodId, //pass productRecordId value to the edit and delete button
+                    };
+
+                    addedProducts.push(item);
+                    sessionStorage.setItem("PrescribedItems", JSON.stringify(addedProducts));
+
+                    //Add each row data to table
+                    dtPrescribedProducts.row.add(item).node().id = 'pId_' + prodId;
+                    dtPrescribedProducts.draw(false);
+                });
+
+               ComputeOrder();
+            });
+
+            //view product row from dtPrescribedProducts table
+            dtPrescribedProducts.on('click', 'button.editItem', function () {
+                var itemId = $(this).val();
+                selectedItem = itemId
+                var getPrescribedItems = JSON.parse(sessionStorage.getItem("PrescribedItems"));
+                console.log(getPrescribedItems)
+                const selected = getPrescribedItems.filter(x => x.productRecordId === itemId)[0]
+                $("#mOrigialPrice").val(selected.productPrice)
+                $("#mUnitPrice").val(selected.customPrice)
+                $("#mQuantity").val(selected.quantity)
+            });
+
+            //update product row from dtPrescribedProducts table
+            $('button#submitModal').on('click', function () {
+                $("#modalEditProduct").modal("hide")
+                dtPrescribedProducts.clear()
+                var getPrescribedItems = JSON.parse(sessionStorage.getItem("PrescribedItems"));
+                sessionStorage.setItem("PrescribedItems", JSON.stringify([]))
+                var addedProducts = [];
+                for (i = 0; i < getPrescribedItems.length; i++) {
+
+                    if (getPrescribedItems[i].productRecordId === selectedItem) {
+                        var item = {
+                            "productRecordId": getPrescribedItems[i].productRecordId,
+                            "productIcon": getPrescribedItems[i].productIcon,
+                            "productName": getPrescribedItems[i].productName,
+                            "productPrice": getPrescribedItems[i].productPrice,
+                            "customPrice": $("#mUnitPrice").val(),
+                            "quantity": $("#mQuantity").val(),
+                            "subTotal": parseFloat($("#mUnitPrice").val() * $("#mQuantity").val()).toFixed(2),
+                            "action": getPrescribedItems[i].productRecordId, //pass productRecordId value to the edit and delete button
+                        };
+
+                        addedProducts.push(item);
+
+
+                        //Add each row data to table
+                        dtPrescribedProducts.row.add(item).node().id = 'pId_' + getPrescribedItems[i].productRecordId;
+                        dtPrescribedProducts.draw(false);
+                    }
+                    else {
+                        var item = {
+                            "productRecordId": getPrescribedItems[i].productRecordId,
+                            "productIcon": getPrescribedItems[i].productIcon,
+                            "productName": getPrescribedItems[i].productName,
+                            "productPrice": getPrescribedItems[i].productPrice,
+                            "customPrice": getPrescribedItems[i].customPrice,
+                            "quantity": getPrescribedItems[i].quantity,
+                            "subTotal": getPrescribedItems[i].subTotal,
+                            "action": getPrescribedItems[i].productRecordId,
+                        };
+
+                        addedProducts.push(item);
+
+                        //Add each row data to table
+                        dtPrescribedProducts.row.add(item).node().id = 'pId_' + getPrescribedItems[i].productRecordId;
+                        dtPrescribedProducts.draw(false);
+                    }
+                }
+                sessionStorage.setItem("PrescribedItems", JSON.stringify(addedProducts));
+                ComputeOrder();
+            });
+
+            //Remove product row from dtPrescribedProducts table
+            dtPrescribedProducts.on('click', 'button.removeItem', function () {
+                var itemId = $(this).val();
+                var pTable = $('#dtPrescribedProducts').DataTable();
+                var getPrescribedItems = JSON.parse(sessionStorage.getItem("PrescribedItems"));
+
+                for (i = 0; i < getPrescribedItems.length; i++) {
+                    if (getPrescribedItems[i].productRecordId === itemId) {
+                        //Remove selected item
+                        getPrescribedItems.splice(i, 1);
+                        break;
+                    }
+                }
+
+                ////Update and set values in Prescribed Items
+                var updatedItems = JSON.stringify(getPrescribedItems);
+                sessionStorage.setItem("PrescribedItems", updatedItems);
+
+                //Remove item row from dtable
+                pTable.row($(this).parents('tr')).remove().draw();
+
+                //Sync cart and recompute total
+                ComputeOrder();
+                //recomputeCart();
+            });
+
+
+            //Submit Prescription with Producrs
+            $("#SavePrescription").on('click', function () {
+                var getItems = sessionStorage.getItem("PrescribedItems");
+                var PrescriptionId = $('#PrescriptionRecordId').val();
+                var newItems = [];
+
+                $.each(JSON.parse(getItems), function (i, itm) {
+                    var item = {
+                        "PrescriptionRecordId": PrescriptionId,
+                        "ProductRecordId": itm.productRecordId,
+                        "ProductCustomPrice": itm.customPrice,
+                        "ProductQuantity": itm.quantity
+                    };
+
+                    newItems.push(item);
+                });
+
+                $.ajax({
+                    url: "/Prescription/PrescriptionDetails",
+                    type: "POST",
+                    data: { prescriptionList: newItems },
+                    success: function (result) {
+                        if (result.cStatus == '200') {
+                            $("#GenericModal").modal('show');
+                            $("#GenericModalTitle").text(result.cMessage);
+                            $("#successIcon").show();
+                            $("#successBtn").show();
+                        }
+                        else {
+                            $("#GenericModal").modal('show');
+                            $("#GenericModalTitle").text(result.cMessage);
+                            $("#errorIcon").show();
+                            $("#errorBtn").show();
+                        }
+                    }
+                });
+            });
+
+        });
+
+
+        $("#successBtn").on('click', function () {
+            window.location.replace(BASEPATH + "/Prescription/");
+        });
+
+        function ComputeOrder() {
+            var getPrescribedItems = JSON.parse(sessionStorage.getItem("PrescribedItems"));
+            var subTotal = 0;
+            var tempVat = 1;
+            var priceWithVat = 0;
+
+            //Adding cut type price to computation of item total per row
+            $.each(getPrescribedItems, function (i, itm) {
+                priceWithVat = itm.customPrice * tempVat;
+
+                subTotal += priceWithVat * itm.quantity;
+            });
+
+            var totalAmt = subTotal;
+
+            $('#compSubtotal').text(subTotal);
+            $('#compTax').text('0.00');
+            $('#compTotalAmt').text(totalAmt.toFixed('2'));
+        }
+
+</script>
+}

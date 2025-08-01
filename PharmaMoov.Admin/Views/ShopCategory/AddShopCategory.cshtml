@@ -1,0 +1,104 @@
+﻿@model PharmaMoov.Models.Shop.ShopCategoriesDTO
+
+@{
+    ViewData["Title"] = "Ajouter une catégorie de boutique";
+    Layout = "~/Views/Shared/_SALayout.cshtml";
+}
+
+<partial name="~/Views/Shared/_GenericModal.cshtml" />
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Ajouter une catégorie de boutique</h3>
+        </nav>
+
+        <form asp-action="AddShopCategory" method="post">
+            <div class="row mt-3 mb-3">
+                <div class="col-sm-6">
+                    <a href="/ShopCategory" class="text-primary"><i class="fas fa-long-arrow-alt-left"></i> Retour</a>
+                </div>
+
+                <div class="col-sm-6 d-flex justify-content-end">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="IsEnabled">
+                        <label class="custom-control-label red-text font-weight-bold" for="IsEnabled" id="lblActive">Inactive</label>
+                        <input type="text" asp-for="IsActive" value="false" style="display: none;" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="form-group required mt-4 mb-4">
+                        <label class="col-form-label control-label">Nom de la catégorie</label>
+                        <input type="text" class="form-control" placeholder="Nom du produit" asp-for="Name">
+                        <span asp-validation-for="Name" class="label-error text-danger small"></span>
+                    </div>
+
+                    <div class="form-group required mt-4 mb-4">
+                        <label class="col-form-label control-label">Vignette de la catégorie </label>
+                        <input type="text" asp-for="ImageUrl" style="display:none;" value="@ViewBag.DefaultIcon">
+
+                        <div class="input-group">
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="UploadImageUrl" accept=".jpeg,.jpg">
+                                <label class="custom-file-label" for="UploadImageUrl">Choisir le fichier</label>
+                            </div>
+                            <span asp-validation-for="ImageUrl" class="text-danger small"></span>
+                        </div>
+                        <small class="form-text text-muted mb-3">
+                            (Pré-requis : Type JPG/JPEG, PNG / Taille max. 150KB, Dimension 102px x 102px)
+                        </small>
+
+                        <div class="spinner-border" role="status" id="imageLoadingUploadImageUrl">
+                            <span class="sr-only">Chargement...</span>
+                        </div>
+                        <img id="imgPrevUploadImageUrl" src="@ViewBag.DefaultIcon" style="width:158px;height:158px;display:block;" />
+                    </div>
+
+                    <div class="form-group mt-5 mb-5">
+                        <div class="col-sm-12">
+                            <a class="btn white-button mr-3 btn-padding" href="#">Annuler</a>
+                            <button type="submit" class="btn login-button mr-3 btn-padding">Soumettre</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+
+        $("#UploadImageUrl").change(function () {
+            validateShopImageFiles("UploadImageUrl");
+        });
+
+        $(document).ready(function () {
+            $("#imageLoadingImageUrl").hide();
+            $(".spinner-border").hide();
+        });
+
+        //get the value of the enable button
+        $("#IsEnabled").change(function () {
+            if ($(this).prop("checked") == true) {
+                $("#IsActive").val("true");
+                $("#lblActive").text("Actif");
+                $("#lblActive").removeClass("red-text");
+            } else {
+                $("#IsActive").val("false");
+                $("#lblActive").text("Inactif");
+                $("#lblActive").addClass("red-text");
+            }
+        });
+
+        $("#successBtn").on('click', function () {
+            window.location.replace(BASEPATH + "/ShopCategory/");
+        });
+    </script>
+}

@@ -1,0 +1,136 @@
+﻿@using PharmaMoov.Models.Admin;
+@model PharmacyAdminDashboardModel
+
+@{
+    ViewData["Title"] = "Tableau de bord";
+}
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Tableau de bord</h3>
+        </nav>
+        <div class="card">
+            <div class="card-body">
+                <div class="row p-2">
+                    <div class="col-sm-4 border">
+                        <div class="row p-3">
+                            <div class="col-sm-3 d-flex justify-content-center flex-column">
+                                <i class="fas fa-clipboard-check text-success fa-3x"></i>
+                            </div>
+                            <div class="col-sm-9 d-flex justify-content-center flex-column">
+                                <h5 class="font-weight-bold m-0 p-0">@Model.CompletedOrder</h5>
+                                <p class="m-0 p-0">Commandes terminées</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 border">
+                        <div class="row p-3">
+                            <div class="col-sm-3 d-flex justify-content-center flex-column">
+                                <i class="fas fa-times-circle text-danger fa-3x"></i>
+                            </div>
+                            <div class="col-sm-9 d-flex justify-content-center flex-column">
+                                <h5 class="m-0 p-0 font-weight-bold">@Model.RefusedOrder</h5>
+                                <p class="m-0 p-0">Commandes refusées</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 border">
+                        <div class="row p-3">
+                            <div class="col-sm-3 d-flex justify-content-center flex-column">
+                                <i class="fas fa-cart-arrow-down text-warning fa-3x"></i>
+                            </div>
+                            <div class="col-sm-9 d-flex justify-content-center flex-column">
+                                <h5 class="m-0 p-0 font-weight-bold">@Model.TotalOrder</h5>
+                                <p class="m-0 p-0">Total de commandes</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row p-3" hidden>
+                    <div class="col-sm-12 border p-3">
+                        <h6>Rapport de vente </h6>
+                        <div class="d-flex justify-content-center">
+                            <div class="col-md-3">
+                                <div class="col-sm-9 d-flex justify-content-center flex-column">
+                                    <h5 class="m-0 p-0 font-weight-bold">@Model.RefusedOrder</h5>
+                                    <p class="m-0 p-0">Commandes refusées</p>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                @*Chart goes here (Check Al Zayyat)*@
+                                <canvas id="dashboardChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //line
+            var ctxL = document.getElementById("dashboardChart").getContext('2d');
+
+            var myLineChart = new Chart(ctxL, {
+                type: 'line',
+                data: {
+                    labels: ["January", "February", "March", "April", "May", "June", "July"],
+                    datasets: [{
+                        label: "Total Sales",
+                        data: [0, 59, 80, 81, 56, 55, 40],
+                        backgroundColor: [
+                            'rgba(76, 175, 80, 0.1)',
+                        ],
+                        backgroundOpacity: 5,
+                        borderColor: [
+                            'rgba(76, 175, 80, 0.7)',
+                        ],
+                        borderWidth: 2
+                    },
+                    {
+                        label: "Average Sales",
+                        data: [28, 48, 40, 19, 86, 27, 90],
+                        backgroundColor: [
+                            'rgba(3, 169, 244, 0.1)',
+                        ],
+                        borderColor: [
+                            'rgba(3, 169, 244, 0.7)',
+                        ],
+                        borderWidth: 2
+                    },
+                    {
+                        label: "Total Orders",
+                        data: [28, 48, 40, 19, 86, 27, 90],
+                        backgroundColor: [
+                            'rgba(255, 235, 59, 0.1)',
+                        ],
+                        borderColor: [
+                            'rgba(255, 235, 59, 0.7)',
+                        ],
+                        borderWidth: 2
+                    },
+                    {
+                        label: "Total Items",
+                        data: [28, 48, 40, 19, 86, 27, 90],
+                        backgroundColor: [
+                            'rgba(62, 69, 81, 0.1)',
+                        ],
+                        borderColor: [
+                            'rgba(62, 69, 81, 0.7)',
+                        ],
+                        borderWidth: 2
+                    }
+                    ]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+        });
+    </script>
+}

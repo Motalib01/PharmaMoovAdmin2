@@ -1,0 +1,90 @@
+﻿
+<thead class="thead-light">
+    <tr>
+        <th class="th-sm font-weight-bold" hidden>
+            Numéro de commande
+        </th>
+        <th class="th-sm font-weight-bold">
+            Pièce d'identité
+        </th>
+        <th class="th-sm font-weight-bold">
+            Nom du client
+        </th>
+        <th class="th-sm font-weight-bold">
+            Montant total
+        </th>
+        <th class="th-sm font-weight-bold">
+            Type de livraison
+        </th>
+        <th class="th-sm font-weight-bold">
+            Date de livraison 
+        </th>
+        <th class="th-sm font-weight-bold">
+            Statut
+        </th>
+        <th class="th-sm font-weight-bold">
+            Action
+        </th>
+    </tr>
+</thead>
+
+@if (Model != null)
+{
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td hidden class="orderID">@item.OrderID</td>
+                <td>@item.OrderReferenceID</td>
+                <td class="text-capitalize">@item.CustomerName</td>
+                <td>€ @item.OrderGrossAmount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)</td>
+
+                @if (item.DeliveryTypeId == PharmaMoov.Models.OrderDeliveryType.FORDELIVERY)
+                {
+                    <td>Pour livraison</td>
+                }
+                else
+                {
+                    <td>Pour ramasser</td>
+                }
+
+                <td>@item.DeliveryDate.ToString("dd MMM yyyy hh:mm tt")</td>
+
+                @if (item.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.PLACED)
+                {
+                    <td><a href="#" class="badge badge-secondary text-uppercase">Effectuée</a></td>
+                }
+                else if (item.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.INPROGRESS)
+                {
+                    <td><a href="#" class="badge badge-warning text-uppercase">En cours</a></td>
+                }
+                else if (item.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.READYFORDELIVERY)
+                {
+                    <td><a href="#" class="badge badge-danger text-uppercase">Prêt pour la livraison</a></td>
+                }
+                else if (item.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.OUTFORDELIVERY)
+                {
+                    <td><a href="#" class="badge badge-primary text-uppercase">En cours de livraison</a></td>
+                }
+                else
+                {
+                    <td><a href="#" class="badge badge-default text-uppercase">Statut non valide</a></td>
+                }
+
+                <td>
+                    <button class="btn btn-action dropdown-toggle" type="button" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="~/Order/OrderDetails?rid=@item.OrderID">Voir commande</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/Payment/Invoice/?orderId=@item.OrderID">Imprimer facture</a>
+                    </div>
+                </td>
+            </tr>
+        }
+
+    </tbody>
+}

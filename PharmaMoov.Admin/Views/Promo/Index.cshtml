@@ -1,0 +1,120 @@
+﻿@using PharmaMoov.Models.Promo
+@model List<PromoDTO>
+@{
+    ViewData["Title"] = "Liste des promotions";
+    Layout = "~/Views/Shared/_SALayout.cshtml";
+}
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">
+                Liste des promotions
+            </h3>
+        </nav>
+        <div class="col-sm-12 d-flex justify-content-end mb-3">
+            <a class="btn login-button border-0 btn-padding" href="~/Promo/AddPromo">Créer code promo</a>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <table class="table-responsive-lg table-hover table-striped text-center " id="dtPromoList" style="table-layout:fixed;">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="th-sm font-weight-bold">Id</th>
+                            <th class="th-sm font-weight-bold">Nom de la promotion</th>
+                            <th class="th-sm font-weight-bold">Type de promotion </th>
+                            <th class="th-sm font-weight-bold">Montant</th>
+                            <th class="th-sm font-weight-bold">Date valable du</th>
+                            <th class="th-sm font-weight-bold">Date valable jusqu’au</th>
+                            <th class="th-sm font-weight-bold">Statut</th>
+                            <th class="th-sm font-weight-bold">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Count > 0)
+                        {
+                            foreach (PromoDTO promo in Model)
+                            {
+                                <tr>
+                                    <td>@promo.PromoRecordID</td>
+                                    <td>@promo.PromoName</td>
+                                    <td>@promo.PType.ToString()</td>
+                                    <td>@promo.PromoValue</td>
+                                    <td>@promo.ValidFrom.ToString("d MMMM yyyy")</td>
+                                    <td>@promo.ValidTo.ToString("d MMMM yyyy")</td>
+                                    <td>
+                                        @if (promo.IsEnabled == true)
+                                        {
+                                            <a style="color:#31969E;" class="font-weight-bold">Actif</a>
+                                        }
+                                        else
+                                        {
+                                            <a class="text-danger font-weight-bold">Inactif</a>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <button class="btn btn-action dropdown-toggle" type="button" data-toggle="dropdown"
+                                                aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-bars"></i>
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <a class="dropdown-item" href="~/Promo/EditPromo?id=@promo.PromoRecordID">
+                                                Modifier
+                                            </a>
+                                            @if (promo.IsEnabled == true)
+                                            {
+                                        <a class="dropdown-item text-danger" onclick="changeStatus(@promo.PromoRecordID, false)">Définir comme inactif</a>
+                                            }
+                                            else
+                                            {
+                                        <a class="dropdown-item" onclick="changeStatus(@promo.PromoRecordID, true)">Définir comme actif</a>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            console.log('start heere');
+            $('#dtPromoList').DataTable(
+                {
+                    responsive: true
+                }); 
+        });
+
+        function changeStatus(rid, stat) {
+            var parameters = {
+                RecordId: rid,
+                IsActive: stat
+            };
+            $.ajax(
+                {
+                    type: 'POST',
+                    url: BASEPATH + '/Promo/ChangePromoStatus',
+                    contentType: 'application/json',
+                    data: JSON.stringify(parameters),
+                    beforeSend: function () {
+                        $("#GenericModal").modal('show');
+                        $("#GenericModalTitle").text("Merci de patienter");
+                        $("#savingGenericLoader").show();
+                    },
+                    success: function (result) {
+                        window.location.replace(BASEPATH + "/Promo/");
+                    },
+                    failed: function (e, x, h) {
+                        console.log(e); console.log(h); console.log(x);
+                    }
+                }
+            );
+        }
+    </script>
+}

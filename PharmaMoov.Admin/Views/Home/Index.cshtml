@@ -1,0 +1,38 @@
+﻿@model PharmaMoov.Models.Admin.AdminLogin
+
+@{
+    ViewData["Title"] = "Connexion";
+    Layout = "~/Views/Shared/_Startup.cshtml";
+}
+
+<div class="container">
+    <div class="Login">
+
+        <form class="text-center" asp-action="Index" method="post">
+            <img src="~/img/logo.png" class="img-fluid mb-5" />
+            
+            <div class="md-form md-outline">
+                <span class="label-error text-danger small">@TempData["ErrorMessage"]</span>
+                <input type="email" class="form-control custom-form" placeholder="Addresse e-mail" asp-for="Email">
+                <span class="far fa-envelope field-icon"></span>
+                <span asp-validation-for="Email" class="label-error text-danger small"></span>
+            </div>
+
+            <div class="md-form md-outline">
+                <input type="password" class="form-control custom-form" placeholder="Mot de passe" asp-for="Password">
+                <span class="fas fa-lock field-icon"></span>
+                <span asp-validation-for="Password" class="label-error text-danger small"></span>
+            </div>
+
+            <button class="btn login-button mb-4 w-100" type="submit">Connexion</button>
+            <br />
+
+            <a href="#" class="link-color">Mot de passe oublié ?</a>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

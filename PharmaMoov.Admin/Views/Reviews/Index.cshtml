@@ -1,0 +1,170 @@
+﻿@using PharmaMoov.Models.Review
+@model IEnumerable<ShopReviewList>
+
+@{
+    ViewData["Title"] = "Commentaires";
+}
+
+<style>
+    .truncate-text {
+        width: 300px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+
+<!-- Modal -->
+<div class="modal fade" id="reviewsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center pt-0">
+                <h5 class="font-weight-normal mb-5 mt-0" id="exampleModalLabel">Commentaires</h5>
+
+                <h6 class="mt-2 mb-3" id="reviewer-name"> </h6>
+
+                <div id="show-stars">
+
+                </div>
+                @*<span class="mt-2 mb-3" id="reviewer-rate"></span>*@
+
+                <p class="p-3" id="reviewer-msg"></p>
+
+                <button type="button" class="btn login-button btn-padding" data-dismiss="modal">Fermer</button>
+            </div>
+            <div class="modal-footer border-0"></div>
+        </div>
+    </div>
+</div>
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Reviews</h3>
+        </nav>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-sm-12">
+                        @if (Model != null)
+                        {
+                            <p>You have a total of <span class="text-success font-weight-bold">@Model.Count()</span> Reviews.</p>
+                        }
+                        else
+                        {
+                         <p>Vous avez <span class="text-success font-weight-bold">0</span> avis.</p>
+                        }
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                <div class="table-responsive-sm">
+                                    <table class="table table-hover table-bordered display table-striped" id="dtMainList">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col" class="th-sm font-weight-bold">Numéro</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Nom</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Evaluation</th>
+                                                <th scope="col" class="th-sm font-weight-bold" hidden>Hidden Rating</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Critique</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Date de la revue</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+
+                                            @if (Model != null)
+                                            {
+                                                var ctr = 1;
+                                                @foreach (var item in Model)
+                                                {
+                                                    <tr>
+                                                        <td>@ctr</td>
+                                                        <td class="text-capitalize uName">@item.CustomerName</td>
+
+                                                        <td class="text-capitalize">
+                                                            <div class="star-ratings">
+                                                                @for (int s = 1; s <= @item.Rating; s++)
+                                                                {
+                                                                    <span class="fa fa-star amber-text"></span>
+                                                                }
+
+                                                                @for (int s = @item.Rating; s < 5; s++)
+                                                                {
+                                                                    <span class="fa fa-star grey-text"></span>
+                                                                }
+                                                                @item.Rating/5
+                                                            </div>
+                                                        </td>
+                                                        <td class="uRate" hidden>@item.Rating</td>
+
+                                                        <td class="text-capitalize uReview"><div class="truncate-text">@item.Review</div></td>
+                                                        <td class="text-capitalize">@item.ReviewDate.ToString("dd MMM yyyy")</td>
+                                                        <td class="text-center"><a class="text-success btn-view-review"><i class="fas fa-eye"></i></a></td>
+                                                    </tr>
+                                                    ctr++;
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dtMainList').DataTable({
+                "info": false,
+                "lengthChange": false,
+                "bFilter": false,
+                "language": {
+                    "info": "Afficher de _START_ à _END_ sur _TOTAL_ entrées",
+                    "emptyTable": "Aucune donnée disponible dans le tableau",
+                    "infoEmpty": "Affichage 0 à 0 sur 0 entrées",
+                    "search": "Cherchez:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                },
+            });
+            $('.dataTables_length').addClass('bs-select');
+        });
+
+        $(document).on('click', 'a.btn-view-review', function () {
+            $('#reviewsModal').modal('show');
+
+            var uName = $(this).closest("tr").find(".uName").text();
+            var uRate = $(this).closest("tr").find(".uRate").text();
+            var uReview = $(this).closest("tr").find(".uReview").text();
+
+            $('#reviewer-name').text(uName);
+            //$('#reviewer-rate').text(uRate + "/5");
+            $('#reviewer-msg').text(uReview);
+
+            $("#show-stars").html('');
+            for (x = 1; x <= uRate; x++) {
+                $("#show-stars").append('<span class="fa fa-star amber-text"></span>');
+            }
+
+            for (y = uRate; y < 5; y++) {
+                $("#show-stars").append('<span class="fa fa-star grey-text"></span>');
+            }
+
+        });
+    </script>
+}

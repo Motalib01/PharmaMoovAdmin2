@@ -1,0 +1,189 @@
+﻿@model PharmaMoov.Models.Admin.AdminProfile
+
+@{
+    ViewData["Title"] = "Ajouter un administrateur";
+}
+
+<partial name="~/Views/Shared/_GenericModal.cshtml" />
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Créer un utilisateur</h3>
+        </nav>
+        <form asp-action="AddAdmin" method="post" autocomplete="off">
+            <div class="row mt-3 mb-3">
+                <div class="col-sm-6">
+                    <a href="/Admin" class="text-primary"><i class="fas fa-long-arrow-alt-left"></i> Retour</a>
+                </div>
+
+                <div class="col-sm-6 d-flex justify-content-end">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="IsActive">
+                        <label class="custom-control-label red-text font-weight-bold" for="IsActive" id="lblActive">Inactif</label>
+                        <input type="text" asp-for="IsEnabled" value="false" style="display: none;" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <div class="form-group row required mt-4 mb-4">
+                        <div class="col-sm-2">
+                            <img id="imgPrevUploadAdminIcon" src="@ViewBag.DefaultIcon" class="img-fluid rounded-circle" style="width:100px;height:100px;display:block;" />
+                            <input type="text" asp-for="ImageUrl" style="display:none;">
+                        </div>
+
+                        <div class="col-sm-10 d-flex align-items-center justify-content-left">
+                            <div class="input-group col-sm-6">
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="UploadAdminIcon" accept="image/*">
+                                    <label class="custom-file-label" for="UploadAdminIcon">Télécharger une photo</label>
+                                </div>
+                            </div>
+                            <div class="spinner-border" role="status" id="imageLoadingUploadAdminIcon">
+                                <span class="sr-only">Chargement...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    @*<div class="row mb-4">
+                        <div class="col-sm-2">
+                            <img src="~/img/default-img.png" class="img-fluid rounded-circle" style="width: 100px; height: 100px;" />
+                        </div>
+                        <div class="col-sm-2 d-flex justify-content-center flex-column text-left">
+                            <input id="upload" type="file" accept="image/*" />
+                            <a href="" id="upload_link">Télécharger une photo</a>
+                        </div>
+                    </div>*@
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Prenom</label>
+                                <input type="text" class="form-control" placeholder="Prenom" asp-for="FirstName">
+                                <span asp-validation-for="FirstName" class="label-error text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Nom</label>
+                                <input type="text" class="form-control" placeholder="Nom" asp-for="LastName">
+                                <span asp-validation-for="LastName" class="label-error text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="text" class="form-control" placeholder="Email" asp-for="Email">
+                                <span asp-validation-for="Email" class="label-error text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Rôle</label>
+                                <select class="browser-default selectpicker" asp-for="UserTypeId">
+                                    <option value="" disabled selected>Select Role</option>
+                                    <option value="5">Operation Manager</option>
+                                    <option value="4">Order Picker</option>
+                                </select>
+                                <span asp-validation-for="UserTypeId" class="label-error text-danger small UserTypeIdValidation"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Mot de passe </label>
+                                <input type="password" class="form-control" asp-for="Password" autocomplete="new-password">
+                                <span asp-validation-for="Password" class="label-error text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Confirmer le mot de passe </label>
+                                <input type="password" class="form-control" asp-for="ConfirmPassword">
+                                <span asp-validation-for="ConfirmPassword" class="label-error text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4 mb-4">
+                        <div class="col-sm-12">
+                            <a class="btn white-button mr-3 btn-padding" href="~/Admin/">Annuler</a>
+                            <button class="btn login-button mr-3 btn-padding" type="submit">Sauvegarder</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+
+        //JS to hide input upload
+        $(function () {
+            $("#upload_link").on('click', function (e) {
+                e.preventDefault();
+                $("#upload:hidden").trigger('click');
+            });
+        });
+
+        $("#UploadAdminIcon").change(function () {
+            validateShopImageFiles("UploadAdminIcon");
+        });
+
+        $(document).ready(function () {
+            $("#imageLoadingUploadAdminIcon").hide();
+            $(".spinner-border").hide();
+
+            var AdminImageUrl = $("#ImageUrl").val();
+            if (AdminImageUrl != "") {
+                $("#imgPrevUploadAdminIcon").attr("src", AdminImageUrl);
+                $("#imgPrevUploadAdminIcon").show();
+            }
+        });
+
+        //get the value of the enable button
+        $("#IsActive").change(function () {
+            if ($(this).prop("checked") == true) {
+                $("#IsEnabled").val("true");
+                $("#lblActive").text("Actif");
+                $("#lblActive").removeClass("red-text");
+            } else {
+                $("#IsEnabled").val("false");
+                $("#lblActive").text("Inactif");
+                $("#lblActive").addClass("red-text");
+            }
+        });
+
+        $("#successBtn").on('click', function () {
+            window.location.replace(BASEPATH + "/Admin/");
+        });
+
+        $("#UserTypeId").change(function () {
+            var value = $(this).val();
+            if (value == "") {
+                $(".UserTypeIdValidation").show();
+            }
+            else {
+                $(".UserTypeIdValidation").hide();
+            }
+        });
+    </script>
+}

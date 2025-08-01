@@ -1,0 +1,166 @@
+﻿@using PharmaMoov.Models.Shop
+@model IEnumerable<ShopList>
+
+@{
+    ViewData["Title"] = "Demande de Pharmacie";
+    Layout = "~/Views/Shared/_SALayout.cshtml";
+}
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Demande de Pharmacie</h3>
+        </nav>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                <div class="table-responsive-sm">
+                                    <table class="table table-hover table-bordered table-striped display" id="dtMainList">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col" class="th-sm font-weight-bold">ID</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Pharmacy Name</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Email</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Numéro de téléphone</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Le nom du propriétaire</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Date de création</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Statut</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+
+                                            @if (Model != null)
+                                            {
+                                                @foreach (var item in Model)
+                                                {
+                                                    <tr>
+                                                        <td>@item.ShopRecordID</td>
+                                                        <td class="text-capitalize">@item.Name</td>
+                                                        <td>@item.Email</td>
+                                                        <td>@item.ContactNumber</td>
+                                                        <td class="text-capitalize">@item.Owner</td>
+                                                        <td class="text-capitalize">@item.DateCreated.ToString("dd MMM yyyy")</td>
+
+                                                        @if (item.RegistrationStatus == PharmaMoov.Models.RegistrationStatus.PENDING)
+                                                        {
+                                                            <td><p class="orange-text font-weight-bold">En attente</p></td>
+                                                        }
+                                                        else if (item.RegistrationStatus == PharmaMoov.Models.RegistrationStatus.APPROVE)
+                                                        {
+                                                            <td><p class="green-text font-weight-bold">Approuvée</p></td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td><p class="red-text font-weight-bold">Refusé</p></td>
+                                                        }
+
+                                                        <td>
+                                                            <button class="btn btn-action dropdown-toggle" type="button" data-toggle="dropdown"
+                                                                    aria-haspopup="true" aria-expanded="false">
+                                                                <i class="fas fa-bars"></i>
+                                                            </button>
+                                                            <div class="dropdown-menu">
+                                                                <a class="dropdown-item" href="~/ShopMgt/ViewPharmacyRequest?sid=@item.ShopId">View</a>
+
+                                                                @if (item.RegistrationStatus == PharmaMoov.Models.RegistrationStatus.PENDING)
+                                                                {
+                                                                    <a class="dropdown-item" onclick="changeStatus(@item.ShopRecordID, 2)">Approve Request</a>
+                                                                    <a class="dropdown-item" onclick="changeStatus(@item.ShopRecordID, 3)">Decline Request</a>
+                                                                }
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="GenericModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+
+    <div class="modal-dialog" role="document">
+
+        <div class="modal-content text-center rounded">
+            <div class="modal-body p-5">
+                <i class="far fa-times-circle fa-5x text-danger" id="errorIcon"></i>
+
+                <h5 class="font-weight-normal mt-3 mb-3" >Restricted</h5>
+
+                <p >Can't approved, there are no mangopay user registered for this shop. </p>
+
+                <button type="button" class="btn pharma-bg-green text-light btn-padding w-50" data-dismiss="modal" id="errorBtn" >D'accord</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dtMainList').DataTable({
+                "info": false,
+                "lengthChange": false,
+                "language": {
+                    "info": "Afficher de _START_ à _END_ sur _TOTAL_ entrées",
+                    "emptyTable": "Aucune donnée disponible dans le tableau",
+                    "infoEmpty": "Affichage 0 à 0 sur 0 entrées",
+                    "search": "Cherchez:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                },
+            });
+            $('.dataTables_length').addClass('bs-select');
+        });
+
+        function changeStatus(rid, stat) {
+            var parameters = {
+                ShopRecordID: rid,
+                RegistrationStatus: stat
+            };
+
+            $.ajax(
+                {
+                    type: 'POST',
+                    url: BASEPATH + '/ShopMgt/ChangeRegistrationStatus',
+                    contentType: 'application/json',
+                    data: JSON.stringify(parameters),
+                    beforeSend: function () {
+                        $("#GenericModal").modal('hide');
+                    },
+                    success: function (result) {
+                        if (result.statusCode === 404) {
+                            $('#GenericModal').modal('show');
+                        }
+                        else {
+                            window.location.replace(BASEPATH + "/ShopMgt/ShopRequest/");
+                        }
+                    },
+                    failed: function (e, x, h) {
+                        console.log(e); console.log(h); console.log(x);
+                    }
+                }
+            );
+        }
+    </script>
+}

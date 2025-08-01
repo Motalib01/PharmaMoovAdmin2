@@ -1,0 +1,199 @@
+﻿@using PharmaMoov.Models.User
+@model User
+@{
+    ViewData["Title"] = "Modifier l'utilisateur";
+    Layout = "~/Views/Shared/_SALayout.cshtml";
+}
+<partial name="~/Views/Shared/_GenericModal.cshtml" />
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Modifier l'utilisateur 'Courier'</h3>
+        </nav>
+        <form method="post" asp-action="EditCourier" asp-controller="UserMgt">
+            <div class="row mt-3 mb-3">
+                <div class="col-sm-6">
+                    <a href="~/UserMgt/Couriers" class="text-primary"><i class="fas fa-long-arrow-alt-left"></i> Retour</a>
+                </div>
+                @Html.HiddenFor(x => Model.UserRecordID)
+                <input type="text" asp-for="IsEnabled" style="display:none;" />
+                <div class="col-sm-6 d-flex justify-content-end">
+                    <div class="custom-control custom-switch  float-right">
+                        <input type="checkbox" class="custom-control-input check" id="customSwitch1">
+                        <label class="custom-control-label red-text" for="customSwitch1" id="lblActive">Inactif</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <div class="row mb-4">
+                        <div class="col-sm-6">
+                            @if (Model.ImageUrl == null)
+                            {
+                                <img src="~/img/default-img.jpg" id="imgPrevUploadImageUrl" class="img-fluid rounded-circle" style="width:137px;height:137px;" />
+                            }
+                            else
+                            {
+                                <img src="@Model.ImageUrl" id="imgPrevUploadImageUrl" class="img-fluid rounded-circle" style="width:137px;height:137px;" />
+                            }
+
+                        </div>
+                        <div class="col-sm-6 text-right">
+                            <a href="~/UserMgt/ChangePassword">Changer le mot de passe</a>
+                            <input type="text" asp-for="ImageUrl" hidden>
+
+                            @*<label class="col-form-label control-label">Upload Profile Photo :</label>
+                            <div class="input-group">
+                                <div class="custom-file">
+                                    <input type="text" asp-for="ImageUrl" hidden>
+                                    <input type="file" class="custom-file-input" id="UploadImageUrl" accept="image/*">
+                                    <label class="custom-file-label" id="UploadImageUrlTextLabel" for="UploadShopIcon">Browse</label>
+                                </div>
+                            </div>
+                            <small class="form-text text-muted">
+                                (Pré-requis : la taille du fichier doit être moins de 500kb et avec resolution maximale 327x200)
+                            </small>
+                            <div class="spinner-border" role="status" id="imageLoadingUploadImageUrl" style="display:none;">
+                                <span class="sr-only">Chargement...</span>
+                            </div>*@
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Prenom</label>
+                                <input type="text" asp-for="FirstName" class="form-control" placeholder="Prenom" autocomplete="off">
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Nom</label>
+                                <input type="text" asp-for="LastName" class="form-control" placeholder="Nom" autocomplete="off">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="text" asp-for="Email" class="form-control" placeholder="Email" autocomplete="off">
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Numéro de telephone</label>
+                                <input type="text" class="form-control" asp-for="MobileNumber" placeholder="Numéro de telephone" autocomplete="off">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Identité professionnelle</label>
+                                <input type="text" asp-for="ProfessionalID" class="form-control" placeholder="Identité professionnelle" autocomplete="off">
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Numéro KBIS</label>
+                                <input type="text" class="form-control" asp-for="KBIS" placeholder="Numéro KBIS" autocomplete="off">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Type de livraison</label>
+                                @Html.DropDownListFor(model => model.MethodDelivery, Enum.GetNames(typeof(PharmaMoov.Models.DeliveryMethod)).Select(e => new SelectListItem { Text = e }), new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4 mb-4">
+                        <div class="col-sm-12">
+                            <a class="btn white-button mr-3 btn-padding" href="~/UserMgt/Couriers">Annuler</a>
+                            <button class="btn login-button mr-3 btn-padding" type="submit">Sauvegarder</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#customSwitch1").change(function () {
+                if ($(this).prop("checked") == true) {
+                    $("#IsEnabled").val("true");
+                    $("#lblActive").text("Actif");
+                    $("#lblActive").removeClass("red-text");
+                } else {
+                    $("#IsEnabled").val("false");
+                    $("#lblActive").text("Inactif");
+                    $("#lblActive").addClass("red-text");
+                }
+            });
+
+            if ($("#IsEnabled").val() == "True") {
+                $("#IsEnabled").val("true");
+                $('#customSwitch1').prop('checked', true);
+                $("#lblActive").text("Actif");
+                $("#lblActive").removeClass("red-text");
+            } else {
+                $('#customSwitch1').prop('checked', false);
+                $("#lblActive").text("Inactif");
+                $("#lblActive").addClass("red-text");
+            }
+
+            var showModal = $("#ShowGenericModal").val();
+            if (showModal == 1) {
+                $("#GenericModal").modal('show');
+                $("#successIcon").show();
+                $("#successBtn").show();
+            }
+
+            if (showModal == 2) {
+                $("#GenericModal").modal('show');
+                $("#errorIcon").show();
+                $("#errorBtn").show();
+            }
+
+            $("#GenericModal").on('hidden.bs.modal', function () {
+                if (showModal == 1) {
+                    window.location.replace("/UserMgt/Couriers");
+                }
+            });
+
+            $("#UploadImageUrl").change(function () {
+                $("#UploadImageLinkTextLabel").text("Choisir fichier");
+                validateShopImageFiles("UploadImageUrl");
+            });
+
+            //if ($("#ImageUrl").val().length > 0) {
+            //    $("#imgPrevUploadShopBanner").attr('src', $("#ImageUrl").val())
+            //    $("#imgPrevUploadShopBanner").show();
+
+            //} else {
+            //    $("#imgPrevUploadShopBanner").hide();
+            //}
+
+            //validate hidden fields
+            $.validator.setDefaults({
+                ignore: []
+            });
+        });
+    </script>
+}

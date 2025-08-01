@@ -1,0 +1,136 @@
+﻿@using PharmaMoov.Models.Shop
+@model List<ShopFAQdto>
+
+@{
+    ViewData["Title"] = "Liste de la FAQs";
+    Layout = "~/Views/Shared/_SALayout.cshtml";
+}
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Liste de la FAQs</h3>
+        </nav>
+        <div class="col-sm-12 d-flex justify-content-end mb-3">
+            <a class="btn login-button border-0 btn-padding" href="~/FAQs/FAQList">
+                Aperçu
+            </a>
+            <a class="btn login-button border-0 btn-padding" href="~/FAQs/Add">
+                Créer une nouvelle FAQ
+            </a>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="table-responsive-sm">
+                            <table class="table table-hover table-bordered table-striped display text-wrap" id="dtFAQList">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col" class="th-sm font-weight-bold">Question</th>
+                                        <th scope="col" class="th-sm font-weight-bold">
+                                            Réponses
+                                        </th>
+                                        <th scope="col" class="th-sm font-weight-bold">Statut</th>
+                                        <th scope="col" class="th-sm font-weight-bold">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model != null && Model.Count > 0)
+                                    {
+                                        foreach (ShopFAQdto sFAQ in Model)
+                                        {
+                                            <tr>
+                                                <td>@sFAQ.Question</td>
+                                                <td>@sFAQ.Answer</td>
+                                                <td>
+                                                    @if (sFAQ.IsActive == true)
+                                                    {
+                                                        <a style="color:#31969E;" class="font-weight-bold">Actif</a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a class="text-danger font-weight-bold">Inactif</a>
+                                                    }
+                                                </td>
+                                                <td class="text-center">
+                                                    <button class="btn btn-action dropdown-toggle" type="button" data-toggle="dropdown"
+                                                            aria-haspopup="true" aria-expanded="false">
+                                                        <i class="fas fa-bars"></i>
+                                                    </button>
+                                                    <div class="dropdown-menu">
+                                                        <a class="dropdown-item" href="~/FAQs/EditFAQ?id=@sFAQ.ShopFAQID">
+                                                            Modifier
+                                                        </a>
+                                                        @if (sFAQ.IsActive == true)
+                                                        {
+                                                            <a class="dropdown-item text-danger" onclick="changeStatus(@sFAQ.ShopFAQID, false)">Définir comme inactif</a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <a class="dropdown-item" onclick="changeStatus(@sFAQ.ShopFAQID, true)">Définir comme actif</a>
+                                                        }
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () { 
+            $('#dtFAQList').DataTable({
+                "info": true,
+                "responsive": true,
+                "lengthChange": false,
+                "language": {
+                    "info": "Afficher de _START_ à _END_ sur _TOTAL_ entrées",
+                    "emptyTable": "Aucune donnée disponible dans le tableau",
+                    "infoEmpty": "Affichage 0 à 0 sur 0 entrées",
+                    "search": "Cherchez:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                },
+            });
+        });
+
+        function changeStatus(rid, stat) {
+            var parameters = {
+                RecordId: rid,
+                IsActive: stat
+            };
+            $.ajax(
+                {
+                    type: 'POST',
+                    url: BASEPATH + '/FAQs/ChangeFAQStatus',
+                    contentType: 'application/json',
+                    data: JSON.stringify(parameters),
+                    beforeSend: function () {
+                        $("#GenericModal").modal('show');
+                        $("#GenericModalTitle").text("Merci de patienter");
+                        $("#savingGenericLoader").show();
+                    },
+                    success: function (result) {
+                        window.location.replace(BASEPATH + "/FAQs/");
+                    },
+                    failed: function (e, x, h) {
+                        console.log(e); console.log(h); console.log(x);
+                    }
+                }
+            );
+        }
+    </script>
+}

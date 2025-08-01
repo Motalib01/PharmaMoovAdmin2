@@ -1,0 +1,24 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Erreur!";
+}
+
+<h1 class="text-danger">Erreur!</h1>
+<h2 class="text-danger">Une erreur est survenue pendant le traitement de votre demande.</h2>
+
+@if (Model.ShowRequestId)
+{
+    <p>
+        <strong>Numéro de demande:</strong> <code>@Model.RequestId</code>
+    </p>
+}
+
+<h3>Mode développement</h3>
+<p>
+    Le passage à l'environnement de développement affichera des informations plus détaillées sur l'erreur qui s'est produite.
+</p>
+<p>
+    <strong>L'environnement de développement ne doit pas être activé pour les applications déployées</strong>
+    Il peut en résulter l'affichage d'informations sensibles à partir d'exceptions pour les utilisateurs finaux.
+    Pour le débogage local, activez l'environnement de développement en définissant la variable d'environnement <strong>ASPNETCORE_ENVIRONMENT</strong> à Development et en redémarrant l'application
+</p>

@@ -1,0 +1,129 @@
+﻿@model PharmaMoov.Models.Shop.Shop
+
+@{
+    ViewData["Title"] = "Méthode de livraison";
+}
+
+<partial name="~/Views/Shared/_GenericModal.cshtml" />
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Récupération des marchandises</h3>
+        </nav>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <p>Paramétrer un mode de livraison à active</p>
+
+                        <div class="form-row">
+
+                            @{
+                                var DeliveryMethod = Model.DeliveryMethod;
+                            }
+
+                            <div class="col-4">
+                                <div class="form-check">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" name="delivery-method" id="forDelivery" value="2">
+                                        <label class="custom-control-label" for="forDelivery">En Livraison</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-4">
+                                <div class="form-check">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" name="delivery-method" id="forPickup" value="1">
+                                        <label class="custom-control-label" for="forPickup">A emporter</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <span id="#error-msg" class="label-error text-danger small"></span>
+
+                        <br />
+                        <button class="btn login-button mr-3 btn-padding" type="button" onclick='saveChanges();'>Soumettre</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+<script type="text/javascript">
+
+        $(document).ready(function () {
+            var prevDelMethod = @Html.Raw(Json.Serialize(DeliveryMethod));
+            if (prevDelMethod == 1) {
+                $("#forPickup").prop("checked", true);
+                $("#forDelivery").prop("checked", false);
+            }
+            else if (prevDelMethod == 2) {
+                $("#forPickup").prop("checked", false);
+                $("#forDelivery").prop("checked", true);
+            }
+            else {
+                $("[name='delivery-method']").prop("checked", true);
+            }
+        });
+
+        function saveChanges() {
+            var checked = $("[name='delivery-method']:checked").length > 0;
+            if (!checked) {
+                $('.label-error').text("Merci de sélectionner une méthode de livraison");
+            }
+            else {
+                $('.label-error').text('');
+
+                var delMethod = $("[name='delivery-method']:checked").val();
+                var allChecked = $("[name='delivery-method']:checked").length;
+
+                if (allChecked == 2) {
+                    delMethod = 0;
+                }
+
+                var parameters = {
+                    DeliveryMethod: delMethod
+                };
+
+                $.ajax(
+                    {
+                        type: 'POST',
+                        url: BASEPATH + '/Shop/SetDeliveryMethod',
+                        contentType: 'application/json',
+                        data: JSON.stringify(parameters),
+                        beforeSend: function () {
+                            $("#GenericModal").modal('show');
+                            $("#GenericModalTitle").text("Merci de patienter");
+                            $("#savingGenericLoader").show();
+                        },
+                        success: function (result) {
+                            if (result.statusCode == 200) {
+                                $("#GenericModal").modal('show');
+                                $("#savingGenericLoader").hide();
+                                $("#GenericModalTitle").text(result.message);
+                                $("#successIcon").show();
+                                $("#successBtn").show();
+                            }
+                            else {
+                                $('#error-msg').text(result.message);
+                            }
+                        },
+                        failed: function (e, x, h) {
+                            console.log(e); console.log(h); console.log(x);
+                        }
+                    }
+                );
+            }
+        }
+
+        $("#successBtn").on('click', function () {
+            window.location.replace(BASEPATH + "/Shop/DeliveryMethod/");
+        });
+</script>
+}

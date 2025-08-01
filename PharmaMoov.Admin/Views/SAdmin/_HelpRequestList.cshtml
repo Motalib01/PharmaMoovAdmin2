@@ -1,0 +1,52 @@
+﻿
+<thead class="thead-light">
+    <tr>
+        <th scope="col" class="th-sm font-weight-bold">Numéro</th>
+        <th scope="col" class="th-sm font-weight-bold">Nom</th>
+        <th scope="col" class="th-sm font-weight-bold">Commande #</th>
+        <th scope="col" class="th-sm font-weight-bold">Description</th>
+        <th scope="col" class="th-sm font-weight-bold">Mobile</th>
+        <th scope="col" class="th-sm font-weight-bold">Email</th>
+        <th scope="col" class="th-sm font-weight-bold">Date de création</th>
+        <th scope="col" class="th-sm font-weight-bold">Statut</th>
+        <th scope="col" class="th-sm font-weight-bold">Action</th>
+    </tr>
+</thead>
+
+@if (Model != null)
+{
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.UserHelpRequestRecordID</td>
+                <td>@item.UserFullName</td>
+                <td class="orderID">@item.OrderId</td>
+                <td>@item.Description</td>
+                <td>@item.UserMobileNumber</td>
+                <td>@item.UserEmail</td>
+                <td class="text-capitalize">@item.DateCreated.ToString("dd MMM yyyy")</td>
+                @if (item.RequestStatus == PharmaMoov.Models.HelpRequestStatus.PENDING)
+                {
+                    <td data-status="@item.RequestStatus"><a href="#" class="badge badge-light text-uppercase">En attente </a></td>
+                }
+                else 
+                {
+                    <td data-status="@item.RequestStatus"><a href="#" class="badge badge-warning text-uppercase">Résolue</a></td>
+                }
+                <td>
+                    <button class="btn btn-action dropdown-toggle" type="button" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="~/SAdmin/HelpRequestView?id=@item.UserHelpRequestRecordID">Voir la plainte</a>
+                        <a class="dropdown-item resolveBtn" onclick="markAsResolved(@item.UserHelpRequestRecordID, 2)">Mark as Resolved</a>
+                    </div>
+                </td>
+            </tr>
+        }
+
+    </tbody>
+}

@@ -1,0 +1,149 @@
+﻿@using PharmaMoov.Models.Shop
+@model SingleShopComissionInvoice
+@{
+    ViewData["Title"] = "La Facture d'impression";
+    Layout = "~/Views/Shared/_Startup.cshtml";
+}
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">
+                La Facture d'impression
+            </h3>
+        </nav>
+        <div class="card">
+            <div class="card-body font-weight-bolder">
+                <div class="row">
+                    <div class="col-sm-12" style="text-align:right;">
+                            <img src="~/img/logo.png" class="pull-right"/>
+                    </div>
+                </div>
+                <div class="row align-content-sm-between">
+                    <div class="col-sm-3">
+                        @*shop address*@
+                        <p>@Model.ShopName <br/>
+                        @Model.ShopAddress</p>
+                    </div>
+                    <div class="col-sm-3"></div>
+                    <div class="col-sm-4"></div>
+                    <div class="col-sm-2">
+                        <strong>Facture No: C @DateTime.Now.Year.ToString() @DateTime.Now.Month.ToString() @DateTime.Now.Hour.ToString()</strong><br/>
+                        <strong>Date de facture : le @DateTime.Now.ToShortDateString()</strong>
+                    </div>
+                </div>
+                <div class="row align-content-sm-end">
+                    <div class="col-sm-8 "></div>
+                    <div class="col-sm-4 pull-right text-right">
+                        <p>
+                            Période de référence :
+                        </p>
+                        <p>
+                            @Model.InvoiceDateRangeFrom.ToShortDateString() 00:00 - @Model.InvoiceDateRangeTo.ToShortDateString() 23:59 (UTC) 
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-3"><strong>Commissions PharmaMoov</strong></div>
+                    <div class="col-sm-9"></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table class="table-responsive-sm text-center" width="100%">
+                            <thead>
+                                <tr class="border-bottom">
+                                    <td>Type de commande</td>
+                                    <td>Quantité</td>
+                                    <td>Montant total (€) </td>
+                                    <td>Tauxde commission </td>
+                                    <td>Commission nette</td>
+                                    <td>Taux TVA sur commission (€)</td>
+                                    <td>TVA comission(€)</td>
+                                    <td>Commission PharmaMoov brute</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null)
+                                {
+                                    foreach (SingleShopComissionInvoiceTransaction Trans in Model.Transactions) 
+                                    {
+                                        <tr class="border-bottom">
+                                            @if (Trans.OrderType == PharmaMoov.Models.OrderDeliveryType.FORDELIVERY)
+                                            {
+                                                <td>Livraison</td>
+                                            }
+                                            else 
+                                            {
+                                                <td>Click & Collect</td>
+                                            }
+                                            <td>
+                                                @Trans.TotalNumberOfOrder
+                                            </td>
+                                            <td>
+                                                @Math.Round(Trans.TotalAmountOfSales,2,MidpointRounding.AwayFromZero) €
+                                            </td>
+                                            <td>
+                                                @Trans.CommissionRate.ToString().Replace(".0", "") %
+                                            </td>
+                                            <td>
+                                                @Math.Round(Trans.CommissionAmount, 2, MidpointRounding.AwayFromZero) €
+                                            </td>
+                                            <td>
+                                                @Trans.FixTax %
+                                            </td>
+                                            <td>
+                                                @Math.Round(Trans.GeneralTaxAmount, 2, MidpointRounding.AwayFromZero) €
+                                            </td>
+                                            <td>
+                                                @Math.Round(Trans.TotalAmountWithtax, 2, MidpointRounding.AwayFromZero) €
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row border-bottom">
+                    <div class="col-sm-10"></div>
+                    <div class="col-sm-2 pull-right font-weight-bold" style="text-align:right;">
+                        Montant Total TTC
+                    </div>
+                </div>
+                <div class="row text-center border-bottom">
+                    <div class="col-sm-8"></div>
+                    <div class="col-sm-1">Net (€) </div>
+                    <div class="col-sm-2">Montant de TVA (€)</div>
+                    <div class="col-sm-1">Total (€)</div>
+                </div>
+                <div class="row text-center border-bottom">
+                    <div class="col-sm-8"></div>
+                    <div class="col-sm-1">@Math.Round(Model.NetAmount, 2, MidpointRounding.AwayFromZero) € </div>
+                    <div class="col-sm-2">@Math.Round(Model.VatAmount, 2, MidpointRounding.AwayFromZero) €</div>
+                    <div class="col-sm-1">@Math.Round(Model.TotalAmountWithTax, 2, MidpointRounding.AwayFromZero) €</div>
+                </div>
+                <div class="row text-right">
+                    <div class="col-sm-12 text-right">
+                        Paiement au comptant
+                    </div>
+                </div>
+            </div>
+            <br /><br /><br /><br /><br /><br /><br />
+            <div class="page-footer">
+                <div class="col-sm-12 text-center">
+                    @*<p>
+                        
+                    </p>*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            window.print();
+        });
+    </script>
+}

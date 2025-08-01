@@ -1,0 +1,176 @@
+﻿@model PharmaMoov.Models.Product.ImportProductParamModel
+
+@{
+    ViewData["Title"] = "Import Products";
+    
+}
+
+<partial name="~/Views/Shared/_GenericModal.cshtml" />
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Produits d'importation</h3>
+        </nav>
+
+        <div class="row mt-3 mb-3">
+            <div class="col-sm-6">
+                <a href="/Product" class="text-primary"><i class="fas fa-long-arrow-alt-left"></i> Retour</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Télécharger le fichier</label>
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input type="file" asp-for="File" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+                                        <label class="custom-file-label" asp-for="File">Choisir fichier</label>
+                                    </div>
+                                </div>
+                                <small class="form-text text-muted">
+                                    (Format de fichier accepté : .xls, .xlsx)
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 mt-4">
+                            <button class="btn login-button mr-3 btn-padding" type="submit">Importation</button>
+                            <a href="~/ImportProduct/ImportProduct.xlsx" class="btn mr-3 btn-padding" style="background-color: #1b6ec2 !important;border-radius: 25px !important;color: #fff !important;">Télécharger le modèle</a>
+
+                        </div>
+                    </div>
+                </form>
+                @if (ViewBag.TotalProduct != 0 && ViewBag.TotalProduct != null)
+                {
+                    <label>@ViewBag.ErrorProduct/@ViewBag.TotalProduct</label><label>&nbsp;</label>
+                    <label>@ViewBag.Percentage%/100%</label>
+                }
+
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: @ViewBag.Percentage%" aria-valuenow="@ViewBag.Percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+
+                @if (ViewBag.ProductErrorList != null && ViewBag.ProductErrorList.Count > 0)
+                {
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <h5 class="mt-3">Products</h5>
+                            <div class="table-responsive-sm table-custom">
+
+                                <table id="dtPaiements" class="table table-hover">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th class="th-sm font-weight-bold">
+                                                Row #
+                                            </th>
+                                            <th class="th-sm font-weight-bold">
+                                                Product Name
+                                            </th>
+                                            <th class="th-sm font-weight-bold">
+                                                Status
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in ViewBag.ProductErrorList)
+                                        {
+                                            <tr>
+                                                <td>@item.Row</td>
+                                                <td>@item.ProductName</td>
+                                                <td>@item.Error</td>
+                                            </tr>
+                                        }
+
+                                        @*@if (Model != null)
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td><i class="fas fa-file-alt mr-3"></i> @item.FileName</td>
+                                            <td>@(item.CreatedDate.HasValue ? item.CreatedDate.Value.ToString("MMMM dd, yyyy") : "--/--/----")</td>
+                                            <td><p>@item.FileSize</p></td>
+                                            <td>
+                                                <button class="btn btn-action dropdown-toggle mr-4" type="button" data-toggle="dropdown"
+                                                        aria-haspopup="true" aria-expanded="false">
+                                                    <i class="fas fa-bars"></i>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item" href="@Url.Action("DownloadFile", "Shop", new { path = item.FilePath, name = item.FileName })">Télécharger</a>
+                                                    <a class="dropdown-item text-danger" onclick='deleteDoc(@item.ShopDocumentID);'>Supprimer</a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }*@
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+
+        function importProducts() {
+            var fpath = $('#FilePath').val();
+
+            if (fpath == '') {
+                $('.error-msg').text("Merci de sélectionner le fichier à importer");
+            }
+            else {
+                var parameters = {
+                    FileName: $("#FileName").val(),
+                    FileSize: $("#FileSize").val(),
+                    FileType: $("#FileType").val(),
+                    FilePath: $("#FilePath").val()
+                };
+
+                console.log(parameters);
+
+                $.ajax(
+                    {
+                        type: 'POST',
+                        url: BASEPATH + '/Product/ImportProducts',
+                        contentType: 'application/json',
+                        data: JSON.stringify(parameters),
+                        beforeSend: function () {
+                            $("#GenericModal").modal('show');
+                            $("#GenericModalTitle").text("Merci de patienter");
+                            $("#savingGenericLoader").show();
+                        },
+                        success: function (result) {
+                            if (result.statusCode == 200) {
+                                $("#GenericModal").modal('show');
+                                $("#savingGenericLoader").hide();
+                                $("#GenericModalTitle").text(result.message);
+                                $("#successIcon").show();
+                                $("#successBtn").show();
+                            }
+                            else {
+                                $('#error-msg').text(result.message);
+                            }
+                        },
+                        failed: function (e, x, h) {
+                            console.log(e); console.log(h); console.log(x);
+                        }
+                    }
+                );
+            }
+        }
+
+        $("#successBtn").on('click', function () {
+            window.location.replace(BASEPATH + "/Product/");
+        });
+    </script>
+}

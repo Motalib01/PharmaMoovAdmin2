@@ -1,0 +1,118 @@
+[
+  //
+  //css minify
+  //
+  {
+    "outputFileName": "wwwroot/css/site.min.css",
+    "inputFiles": [
+      "wwwroot/css/site.css"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    }
+  },
+  {
+    "outputFileName": "wwwroot/css/jquery-datepicker.min.css",
+    "inputFiles": [
+      "wwwroot/css/jquery-datepicker.css"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    }
+  },
+  {
+    "outputFileName": "wwwroot/css/jQueryUI.min.css",
+    "inputFiles": [
+      "wwwroot/css/jQueryUI.css"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    }
+  },
+  {
+    "outputFileName": "wwwroot/css/style.min.css",
+    "inputFiles": [
+      "wwwroot/css/style.css"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    }
+  },
+  {
+    "outputFileName": "wwwroot/css/jquery.mCustomScrollbar.min.css",
+    "inputFiles": [
+      "wwwroot/css/jquery.mCustomScrollbar.css"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    }
+  },
+  {
+    "outputFileName": "wwwroot/css/startup.min.css",
+    "inputFiles": [
+      "wwwroot/css/startup.css"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    }
+  },
+  //
+  //js minify
+  //
+  {
+    "outputFileName": "wwwroot/js/site.min.js",
+    "inputFiles": [
+      "wwwroot/js/site.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    }
+  },
+  {
+    "outputFileName": "wwwroot/js/jquery-datepicker.min.js",
+    "inputFiles": [
+      "wwwroot/js/jquery-datepicker.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    }
+  },
+  {
+    "outputFileName": "wwwroot/js/jquery.mCustomScrollbar.concat.min.js",
+    "inputFiles": [
+      "wwwroot/js/jquery.mCustomScrollbar.concat.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    }
+  },
+  {
+    "outputFileName": "wwwroot/js/jQueryUI.min.js",
+    "inputFiles": [
+      "wwwroot/js/jQueryUI.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    }
+  },
+  {
+    "outputFileName": "wwwroot/js/startup.min.js",
+    "inputFiles": [
+      "wwwroot/js/startup.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    }
+  }
+]

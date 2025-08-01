@@ -1,0 +1,32 @@
+﻿
+@* Success/Error Modal *@
+<div class="modal fade" id="GenericModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static">
+
+    <div class="modal-dialog" role="document">
+        <input type="hidden" id="ShowGenericModal" value="@ViewBag.ShowModal" />
+
+        <div class="modal-content text-center rounded">
+            <div class="modal-body p-5">
+
+                <div class="spinner-border text-success" style="width: 4rem; height: 4rem;display:none;" role="status" id="savingGenericLoader">
+                    <span class="sr-only">Chargement...</span>
+                </div>
+
+                <i class="far fa-check-circle fa-5x link-color" id="successIcon" style="display:none;"></i>
+                <i class="far fa-times-circle fa-5x text-danger" id="errorIcon" style="display:none;"></i>
+
+                @*<img src="~/img/check-icon.svg" class="img-fluid" id="successIcon" style="display:none;" />*@
+                @*<img src="~/img/wrong-icon.jpg" class="img-fluid" id="errorIcon" style="display:none;" />*@
+
+                <h5 class="font-weight-normal mt-3 mb-3" id="GenericModalTitle">@ViewBag.ModalTitle</h5>
+
+                <p id="GenericModalMsg">@ViewBag.ModalMessage </p>
+
+                <button type="button" class="btn login-button btn-padding w-50" data-dismiss="modal" id="successBtn" style="display:none;">D'accord</button>
+                <button type="button" class="btn login-button btn-padding w-50" data-dismiss="modal" id="errorBtn" style="display: none;">D'accord</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+

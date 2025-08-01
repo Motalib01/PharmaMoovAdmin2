@@ -1,0 +1,84 @@
+﻿@model PharmaMoov.Models.Admin.AdminLogin
+
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_Startup.cshtml";
+}
+
+<div class="container">
+    <div class="Login">
+
+        <form class="text-center" asp-action="Index" method="post">
+            <img src="~/img/logo.png" class="img-fluid mb-5" />
+            <h3><b>PharmaMoov</b></h3>
+            <div class="md-form md-outline">
+                <span class="label-error text-danger small">@TempData["ErrorMessage"]</span>
+                <span id="terms-error" class="label-error text-danger small" hidden>Merci d'accepter les conditions générales et politique de confidentialité pour vous enregistrer.</span>
+            </div>
+
+            <div class="md-form md-outline">
+                <input type="email" class="form-control custom-form" placeholder="Addresse e-mail" asp-for="Email">
+                <span class="far fa-envelope field-icon"></span>
+                <span asp-validation-for="Email" class="label-error text-danger small"></span>
+            </div>
+
+            <div class="md-form md-outline">
+                <input type="password" class="form-control custom-form" placeholder="Mot de passe" asp-for="Password">
+                <span class="fas fa-lock field-icon"></span>
+                <span asp-validation-for="Password" class="label-error text-danger small"></span>
+            </div>
+
+            <button class="btn login-button mb-4 w-100" type="button" onclick='login();'>Connexion</button>
+            <br />
+
+            <a href="~/Home/ForgotPassword" class="link-color">Mot de passe oublié ?</a>
+
+        </form>
+    </div>
+
+    <div class="text-center">
+        <div class="form-row accept-width">
+            <div class="col-3">
+                <label>j'accepte sans réserve les :</label>
+            </div>
+            <div class="col-4">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="terms-conditions" name="terms-private" checked>
+                    <label for="terms-conditions" class="custom-control-label"><a href="~/FAQs/ShopTermsAndConditions" class="link-color">Conditions Générales D’utilisation</a></label>
+                </div>
+
+            </div>
+            <div class="col-4">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="privacy-policy" name="terms-private" checked>
+                    <label for="privacy-policy" class="custom-control-label"><a href="~/FAQs/PrivacyPolicy" class="link-color">Politique de Confidentialité</a></label>
+                </div>
+            </div>
+            <div class="col-1"></div>
+        </div>
+    </div>
+
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        $(document).on('keypress', function (e) {
+            if (e.which == 13) {
+                login();
+            }
+        });
+        function login() {
+            var allChecked = $("[name='terms-private']:checked").length;
+            if (allChecked == 2) {
+                document.querySelector('form').submit();
+            }
+            else {
+                $("#terms-error").removeAttr("hidden");
+            }
+        }
+
+    </script>
+}

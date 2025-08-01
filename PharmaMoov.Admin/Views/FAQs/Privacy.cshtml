@@ -1,0 +1,64 @@
+﻿@using PharmaMoov.Models.Shop
+@model PrivacyPolicy
+
+@{
+    ViewData["Title"] = "Politique de confidentialité";
+    Layout = "~/Views/Shared/_SALayout.cshtml";
+}
+<partial name="~/Views/Shared/_GenericModal.cshtml" />
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Politique de confidentialité</h3>
+        </nav>
+        @*<div class="col-sm-12 d-flex justify-content-end mb-3">
+            <a class="btn login-button border-0 btn-padding" href="~/FAQs/PrivacyPolicy">
+                Aperçu
+            </a>
+        </div>*@
+        <div class="card">
+            <div class="card-body">
+                <form asp-controller="FAQs" asp-action="Privacy">
+                    @Html.HiddenFor(p => p.PrivacyPolicyBody)
+                    <textarea rows="5" id="EditorPrivacyPolicyBody">
+
+                    </textarea>
+
+                    <div class="mt-5 mb-5">
+                        <button type="submit" class="btn login-button btn-padding">Sauvegarder</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#EditorPrivacyPolicyBody').mdbWYSIWYG();
+
+            $(".mdb-wysiwyg-textarea").html($("#PrivacyPolicyBody").val());
+
+            $(".mdb-wysiwyg-textarea").on('input change keyup', function () {
+                console.log($(".mdb-wysiwyg-textarea").html());
+                $("#PrivacyPolicyBody").val($(".mdb-wysiwyg-textarea").html());
+            });
+
+
+            var showModal = $("#ShowGenericModal").val();
+            if (showModal == 1) {
+                $("#GenericModal").modal('show');
+                $("#successIcon").show();
+                $("#successBtn").show();
+            }
+
+            $("#GenericModal").on('hidden.bs.modal', function () {
+                if (showModal == 1) {
+                    window.location.replace("/FAQs/Privacy");
+                }
+            });
+        });
+    </script>
+}

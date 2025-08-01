@@ -1,0 +1,61 @@
+﻿@using PharmaMoov.Models.Shop
+@model PharmaMoov.Models.Shop.ShopTermsAndCondition
+@{
+    ViewData["Title"] = "Shop Termes et conditions";
+    Layout = "~/Views/Shared/_SALayout.cshtml";
+}
+<partial name="~/Views/Shared/_GenericModal.cshtml" />
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Shop Termes et conditions </h3>
+        </nav>
+        <div class="col-sm-12 d-flex justify-content-end mb-3">
+            <a class="btn login-button border-0 btn-padding" href="~/FAQs/ShopTermsAndConditions">
+                Aperçu
+            </a>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <form asp-controller="FAQs" asp-action="ShopTerms" method="post">
+                    @Html.HiddenFor(t => t.ShopTermsAndConditionBody)
+                    <textarea rows="5" id="EditorTermsAndConditionBody">
+
+                    </textarea>
+
+                    <div class="mt-5 mb-5">
+                        <button type="submit" class="btn login-button btn-padding">Sauvegarder</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $('#EditorTermsAndConditionBody').mdbWYSIWYG();
+            $(".mdb-wysiwyg-textarea").html($("#ShopTermsAndConditionBody").val());
+
+            $(".mdb-wysiwyg-textarea").on('input change keyup', function () {
+                console.log($(".mdb-wysiwyg-textarea").html());
+                $("#ShopTermsAndConditionBody").val($(".mdb-wysiwyg-textarea").html());
+            });
+
+            var showModal = $("#ShowGenericModal").val();
+            if (showModal == 1) {
+                $("#GenericModal").modal('show');
+                $("#successIcon").show();
+                $("#successBtn").show();
+            }
+
+            $("#GenericModal").on('hidden.bs.modal', function () {
+                if (showModal == 1) {
+                    window.location.replace("/FAQs/ShopTerms");
+                }
+            });
+        });
+    </script>
+}

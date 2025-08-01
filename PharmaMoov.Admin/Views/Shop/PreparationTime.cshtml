@@ -1,0 +1,98 @@
+﻿@model PharmaMoov.Models.Shop.Shop
+
+@{
+    ViewData["Title"] = "Preparation Time";
+}
+
+<partial name="~/Views/Shared/_GenericModal.cshtml" />
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Temps moyen de préparation</h3>
+        </nav>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <p>Paramétrer le temps de préparation de commande (Ex : 5-90 minutes)</p>
+
+                        <input type="number" class="form-control" asp-for="PreparationTime" min="20" max="90" onkeydown="return isIntegerOnly(event)">
+                        <span id="#error-msg" class="label-error text-danger small"></span>
+
+                        <br />
+                        <button class="btn login-button mr-3 btn-padding" type="button" onclick='saveChanges();'>Soumettre</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+
+        $('#PreparationTime').keyup(function () {
+            if ($(this).val().length != 0)
+                $('.login-button').attr('disabled', false);
+            else
+                $('.login-button').attr('disabled', true);
+        });
+
+        $("#PreparationTime").change(function () {
+            if ($(this).val().length != 0)
+                $('.login-button').attr('disabled', false);
+            else
+                $('.login-button').attr('disabled', true);
+        });
+
+        function saveChanges() {
+            var prepTime = $('#PreparationTime').val();
+
+            if (prepTime == '') {
+                $('#error-msg').text("Le temps de préparation est requis");
+            }
+            else {
+
+                var parameters = {
+                    PreparationTime: prepTime
+                };
+
+                $.ajax(
+                    {
+                        type: 'POST',
+                        url: BASEPATH + '/Shop/SetPreparationTime',
+                        contentType: 'application/json',
+                        data: JSON.stringify(parameters),
+                        beforeSend: function () {
+                            $("#GenericModal").modal('show');
+                            $("#GenericModalTitle").text("Merci de patienter");
+                            $("#savingGenericLoader").show();
+                        },
+                        success: function (result) {
+                            if (result.statusCode == 200) {
+                                $("#GenericModal").modal('show');
+                                $("#savingGenericLoader").hide();
+                                $("#GenericModalTitle").text(result.message);
+                                $("#successIcon").show();
+                                $("#successBtn").show();
+                            }
+                            else {
+                                $('#error-msg').text(result.message);
+                            }
+                        },
+                        failed: function (e, x, h) {
+                            console.log(e); console.log(h); console.log(x);
+                        }
+                    }
+                );
+            }
+        }
+
+        $("#successBtn").on('click', function () {
+            window.location.replace(BASEPATH + "/Shop/PreparationTime/");
+        });
+    </script>
+}

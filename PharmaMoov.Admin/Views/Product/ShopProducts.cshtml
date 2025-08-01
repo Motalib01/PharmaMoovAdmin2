@@ -1,0 +1,168 @@
+﻿@using PharmaMoov.Models.Product
+@model IEnumerable<ProductList>
+
+@{
+    ViewData["Title"] = "Liste de produits";
+    Layout = "~/Views/Shared/_SALayout.cshtml";
+}
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Liste de produits</h3>
+        </nav>
+        <div class="row mt-3 mb-3">
+            <div class="col-sm-6">
+                <a href="/ShopMgt" class="text-primary"><i class="fas fa-long-arrow-alt-left"></i> Retour</a>
+            </div>
+        </div>
+        @*<div class="col-sm-12 d-flex justify-content-end mb-3">
+            <a class="text-primary mr-3 btn-padding" href="~/ProductCategory/">Voir la liste des catégories</a>
+            <a class="btn login-button btn-primary border-0 btn-padding" href="~/Product/AddProduct">Créer un nouveau produit</a>
+        </div>*@
+        @if (Model.Count() != 0)
+        {
+    <h4>Afficher la liste des produits de "@Model.First().ShopName"</h4>
+        }
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                <div class="table-responsive-sm">
+                                    <table class="table table-hover table-bordered table-striped display" id="dtMainList">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col" class="th-sm font-weight-bold">Identifiant produit</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Image produit</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Nom de produit</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Prix</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Catégorie</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Statut</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+
+
+                                            @if (Model != null)
+                                            {
+                                                var ctr = 1;
+                                                @foreach (var prod in Model)
+                                                {
+                                                    <tr>
+                                                        <td>@ctr</td>
+                                                        <td><img src="@prod.ProductIcon" style='width:75px;height:75px;'></td>
+                                                        <td>@prod.ProductName</td>
+                                                        <td>@prod.ProductPrice.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)</td>
+                                                        <td>@prod.ProductCategory</td>
+
+                                                        @if (prod.ProductStatus == PharmaMoov.Models.ProductStatus.ACTIVE)
+                                                        {
+                                                            <td><p class="badge badge-primary text-uppercase">En stock</p></td>
+                                                        }
+                                                        else if (prod.ProductStatus == PharmaMoov.Models.ProductStatus.INACTIVE)
+                                                        {
+                                                            <td><p class="badge badge-danger text-uppercase">Inactif</p></td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td><p class="badge badge-warning text-uppercase">Stock épuisé</p></td>
+                                                        }
+                                                        <td class="text-center">
+                                                            <button class="btn btn-action dropdown-toggle" type="button" data-toggle="dropdown"
+                                                                    aria-haspopup="true" aria-expanded="false">
+                                                                <i class="fas fa-bars"></i>
+                                                            </button>
+                                                            <div class="dropdown-menu">
+                                                                <a class="dropdown-item" href="~/Product/EditProduct?pid=@prod.ProductRecordId">Modifier un produit</a>
+
+                                                                @if (prod.ProductStatus == PharmaMoov.Models.ProductStatus.ACTIVE)
+                                                                {
+                                                                    <a class="dropdown-item text-danger" onclick="changeStatus(@prod.ProductRecordId, 2)">Marquer comme inactif</a>
+                                                                    <a class="dropdown-item" onclick="changeStatus(@prod.ProductRecordId, 3)">En rupture de stock</a>
+                                                                }
+                                                                else if (prod.ProductStatus == PharmaMoov.Models.ProductStatus.INACTIVE)
+                                                                {
+                                                                    <a class="dropdown-item" onclick="changeStatus(@prod.ProductRecordId, 1)">Marquer comme actif</a>
+                                                                    <a class="dropdown-item" onclick="changeStatus(@prod.ProductRecordId, 3)">En rupture de stock</a>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <a class="dropdown-item" onclick="changeStatus(@prod.ProductRecordId, 1)">Définir comme actif</a>
+                                                                    <a class="dropdown-item text-danger" onclick="changeStatus(@prod.ProductRecordId, 2)">Définir comme inactif</a>
+                                                                }
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    ctr++;
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dtMainList').DataTable({
+                "info": true,
+                "lengthChange": false,
+                "language": {
+                    "info": "Afficher de _START_ à _END_ sur _TOTAL_ entrées",
+                    "emptyTable": "Aucune donnée disponible dans le tableau",
+                    "infoEmpty": "Affichage 0 à 0 sur 0 entrées",
+                    "search": "Cherchez:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                },
+            });
+            $('.dataTables_length').addClass('bs-select');
+        });
+
+        function changeStatus(pid, stat) {
+            var parameters = {
+                ProductRecordId: pid,
+                ProductStatus: stat
+            };
+
+            $.ajax(
+                {
+                    type: 'POST',
+                    url: BASEPATH + '/Product/ChangeProductStatus',
+                    contentType: 'application/json',
+                    data: JSON.stringify(parameters),
+                    beforeSend: function () {
+                        $("#GenericModal").modal('show');
+                        $("#GenericModalTitle").text("Merci de patienter");
+                        $("#savingGenericLoader").show();
+                    },
+                    success: function (result) {
+                        console.log("dito")
+                        location.reload();
+                        //window.location.replace(BASEPATH + "/Product/");
+                    },
+                    failed: function (e, x, h) {
+                        console.log(e); console.log(h); console.log(x);
+                    }
+                }
+            );
+        }
+    </script>
+}

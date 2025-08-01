@@ -1,0 +1,220 @@
+﻿@using PharmaMoov.Models.User
+@model List<User>
+@{
+    ViewData["Title"] = "Health Professionals";
+    Layout = "~/Views/Shared/_SALayout.cshtml";
+}
+<partial name="~/Views/Shared/_GenericModal.cshtml" />
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Liste des professionnels de la santé</h3>
+        </nav>
+        <div class="col-sm-12 d-flex justify-content-end mb-3">
+            <a class="btn login-button btn-padding" id="thisExportBtn" href="#">Exporter dans Excel</a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                <div class="table-responsive-sm">
+                                    <table class="table table-hover table-bordered table-striped display" id="dtHealthProfList">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th scope="col" class="th-sm font-weight-bold">User No.</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Photo du profil </th>
+                                                <th scope="col" class="th-sm font-weight-bold">Nom</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Email</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Numéro de telephone</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Date de création</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Statut</th>
+                                                <th scope="col" class="th-sm font-weight-bold">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model != null)
+                                            {
+                                                foreach (User rUser in Model)
+                                                {
+                                                    <tr>
+                                                        <td>@rUser.UserRecordID</td>
+                                                        <td>
+                                                            @if (rUser.ImageUrl != null)
+                                                            {
+                                                                <img src="@rUser.ImageUrl" style='width:75px;height:75px;'>
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="~/img/default-img.png" style='width:75px;height:75px;'>
+                                                            }
+                                                        </td>
+                                                        <td>@rUser.FirstName @rUser.LastName</td>
+                                                        <td>@rUser.Email</td>
+                                                        <td>@rUser.MobileNumber</td>
+                                                        <td>@rUser.CreatedDate.GetValueOrDefault().ToString("dd MMM yyyy")</td>
+                                                        <td>
+                                                            @if (rUser.IsDecline == true)
+                                                            {
+                                                                <p class="badge badge-danger text-uppercase">Declined</p>
+                                                            }
+                                                            else if (rUser.IsEnabled == true)
+                                                            {
+                                                                <p class="badge badge-primary text-uppercase">Actif</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                <p class="badge badge-light text-uppercase">Inactif</p>
+                                                            }
+                                                        </td>
+                                                        <td>
+                                                            @if (rUser.IsDecline == false)
+                                                            {
+                                                                <button class="btn btn-action dropdown-toggle" type="button" data-toggle="dropdown"
+                                                                        aria-haspopup="true" aria-expanded="false">
+                                                                    <i class="fas fa-bars"></i>
+                                                                </button>
+                                                                <div class="dropdown-menu">
+                                                                    <a class="dropdown-item" href="~/UserMgt/EditHealthProfessional?HealthProfID=@rUser.UserRecordID">Afficher / modifier l'utilisateur</a>
+                                                                    @if (rUser.IsEnabled == true)
+                                                                    {
+                                                                        <a class="dropdown-item text-gray" onclick="changeStatus(@rUser.UserRecordID, false)">Marquer comme inactif</a>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <a class="dropdown-item text-gray" onclick="changeStatus(@rUser.UserRecordID, true)">Marquer comme actif</a>
+                                                                    }
+                                                                    @if (rUser.IsLocked == true)
+                                                                    {
+                                                                        <a class="dropdown-item text-gray" onclick="changeAcceptOrDeclineRequest(@rUser.UserRecordID, false)">Accepter requête</a>
+                                                                        <a class="dropdown-item text-gray" onclick="changeAcceptOrDeclineRequest(@rUser.UserRecordID, true)">Refuser la demande</a>
+                                                                    }
+
+                                                                </div>
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dtHealthProfList').DataTable({
+                "info": true,
+                "lengthChange": false,
+                "language": {
+                    "info": "Afficher de _START_ à _END_ sur _TOTAL_ entrées",
+                    "emptyTable": "Aucune donnée disponible dans le tableau",
+                    "infoEmpty": "Affichage 0 à 0 sur 0 entrées",
+                    "search": "Cherchez:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                },
+                "dom": 'Bfrtip',
+                "buttons": [
+                    {
+                        text: 'Excel to Export',
+                        extend: 'excelHtml5',
+                        fieldSeparator: '\t',
+                        extension: '.xlsx',
+                        attr: {
+                            id: 'exportBtn',
+                            hidden: 'hidden'
+                        },
+                        className: 'login-button btn-padding',
+                        exportOptions: {
+                            columns: [0, 2, 3, 4, 5, 6]
+                        }
+                    }
+                ]
+            });
+            $('.dataTables_length').addClass('bs-select');
+            $('input[type=search]').addClass('form-control');
+
+            $("#thisExportBtn").click(function () {
+                $("#exportBtn").click();
+            });
+        });
+
+        function changeStatus(rid, stat) {
+            var parameters = {
+                RecordId: rid,
+                IsActive: stat
+            };
+            $.ajax(
+                {
+                    type: 'POST',
+                    url: BASEPATH + '/UserMgt/ChangeUserStatus',
+                    contentType: 'application/json',
+                    data: JSON.stringify(parameters),
+                    beforeSend: function () {
+                        $("#GenericModal").modal('show');
+                        $("#GenericModalTitle").text("Merci de patienter");
+                        $("#savingGenericLoader").show();
+                    },
+                    success: function (result) {
+                        if (result.statusCode == 400) {
+                            $("#savingGenericLoader").hide();
+                            $("#GenericModal").modal('show');
+                            $("#GenericModalTitle").text(result.message);
+                            $("#successIcon").hide();
+                            $("#successBtn").hide();
+                            $("#errorIcon").show();
+                            $("#errorBtn").show();
+                        }
+                        else {
+                            window.location.replace(BASEPATH + "/UserMgt/HealthProfessionals");
+                        }
+                    },
+                    failed: function (e, x, h) {
+                        console.log(e); console.log(h); console.log(x);
+                    }
+                }
+            );
+        }
+
+        function changeAcceptOrDeclineRequest(rid, stat) {
+            var parameters = {
+                RecordId: rid,
+                IsLocked: stat
+            };
+            $.ajax(
+                {
+                    type: 'POST',
+                    url: BASEPATH + '/UserMgt/ChangeAcceptOrDeclineRequest',
+                    contentType: 'application/json',
+                    data: JSON.stringify(parameters),
+                    beforeSend: function () {
+                        $("#GenericModal").modal('show');
+                        $("#GenericModalTitle").text("Merci de patienter");
+                        $("#savingGenericLoader").show();
+                    },
+                    success: function (result) {
+                        window.location.replace(BASEPATH + "/UserMgt/HealthProfessionals");
+                    },
+                    failed: function (e, x, h) {
+                        console.log(e); console.log(h); console.log(x);
+                    }
+                }
+            );
+        }
+    </script>
+}

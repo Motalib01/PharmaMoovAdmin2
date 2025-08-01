@@ -1,0 +1,34 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - PharmaMoov</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+    <!-- Google Fonts Poppins -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link rel="stylesheet" href="~/mdb/css/mdb.min.css">
+    <link rel="stylesheet" href="~/mdb/css/style.css">
+    <link rel="stylesheet" href="~/mdb/css/startup.css">
+</head>
+
+<body>
+
+    @RenderBody()
+
+    <!-- JQuery -->
+    <script type="text/javascript" src="~/mdb/js/jquery.min.js"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="~/mdb/js/popper.min.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="~/mdb/js/bootstrap.min.js"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="~/mdb/js/mdb.min.js"></script>
+
+    @RenderSection("Scripts", required: false)
+
+</body>
+</html>

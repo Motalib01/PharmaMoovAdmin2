@@ -1,0 +1,373 @@
+﻿@model PharmaMoov.Models.Orders.OrderDetailsDTO
+
+@{
+    ViewData["Title"] = "Détail de la commande ";
+}
+
+<partial name="~/Views/Shared/_GenericModal.cshtml" />
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4 header-custom-color">Numéro de la commande: @Model.OrderDetails.OrderReferenceID</h3>
+        </nav>
+
+        <form asp-action="AddAdmin" method="post">
+            <div class="row mt-3 mb-3">
+                <div class="col-sm-6">
+                    <a href="~/Order" class="text-primary"><i class="fas fa-long-arrow-alt-left"></i> Retour</a>
+                </div>
+            </div>
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <div class="modal-body pb-0">
+
+                        <div class="row">
+
+                            <div class="col-sm-5">
+                                <h6 class="font-weight-bold">Détail de la commande</h6>
+                                <p class="m-0">
+                                    <span class="text-gray">Numéro de la commande:</span>
+                                    <span class="order-id">@Model.OrderDetails.OrderReferenceID</span>
+                                </p>
+                                <p class="m-0">
+                                    <span class="text-gray">Date de la commande:</span>
+                                    <span class="date-added">@Model.OrderDetails.DateAdded.ToString("dd/MM/yyyy hh:mm tt")</span>
+                                </p>
+                                @*<p class="m-0">
+                                        <span class="text-gray">Type:</span>
+
+                                        @if (Model.OrderDetails.DeliveryMethod == PharmaMoov.Models.OrderDeliveryType.FORDELIVERY)
+                                        {
+                                            <span class="text-danger del-method">Pour livraison</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-danger del-method">Pour ramasser</span>
+                                        }
+
+                                        <br />
+                                        <span class="text-gray">Sélectionner un créneau:</span>
+                                        <span class="del-time">@Model.OrderDetails.ScheduleTiming</span>
+                                    </p>*@
+                            </div>
+
+                            <div class="col-sm-5">
+                                <h6 class="font-weight-bold">Adresse de livraison</h6>
+                                <p class="m-0">
+                                    <span class="text-capitalize address-name">@Model.OrderDetails.AddressName</span>
+                                </p>
+                                <p class="m-0">
+                                    <span class="text-capitalize complete-address">@Model.OrderDetails.CompleteAddress</span>
+                                </p>
+                                <p class="m-0">
+                                    <span class="text-gray">Numéro de telephone:</span>
+                                    <span class="mobile-num">@Model.OrderDetails.MobileNumber</span>
+                                </p>
+                            </div>
+
+                            <div class="col-sm-2">
+                                <h6 class="font-weight-bold">Montant total</h6>
+                                <p class="font-weight-bolder m-0">
+                                    <span class="text-capitalize text-danger">€ @Model.OrderDetails.OrderGrossAmount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)</span>
+                                </p>
+                                <br />
+                                <h6 class="font-weight-bold">Statut de la commande</h6>
+                                <p class="font-weight-bolder m-0">
+                                    @{
+                                        if (Model.OrderDetails.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.PENDING)
+                                        {
+                                            <span class="text-success">EFFECTUÉE</span>
+                                        }
+                                        else if (Model.OrderDetails.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.PLACED)
+                                        {
+                                            <span class="text-success">PLACÉ</span>
+                                        }
+                                        else if (Model.OrderDetails.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.INPROGRESS)
+                                        {
+                                            <span class="text-success">EN COURS</span>
+                                        }
+                                        else if (Model.OrderDetails.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.READYFORDELIVERY)
+                                        {
+                                            <span class="text-success">PRÊTS POUR LA LIVRAISON</span>
+                                        }
+                                        else if (Model.OrderDetails.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.OUTFORDELIVERY)
+                                        {
+                                            <span class="text-success">EN COURS DE LIVRAISON</span>
+                                        }
+                                        else if (Model.OrderDetails.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.COMPLETED)
+                                        {
+                                            <span class="text-success">COMPLÉTÉ</span>
+                                        }
+                                        else if (Model.OrderDetails.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.CANCELORDER)
+                                        {
+                                            <span class="text-success">ANNULÉ</span>
+                                        }
+                                        else if (Model.OrderDetails.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.REJECTED)
+                                        {
+                                            <span class="text-success">REJETÉE</span>
+                                        }
+                                        else if (Model.OrderDetails.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.READYFORPICKUP)
+                                        {
+                                            <span class="text-success">PRÊT POUR LA COLLECTE</span>
+                                        }
+                                        else if (Model.OrderDetails.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.ACCEPTED)
+                                        {
+                                            <span class="text-success">ACCEPTÉ</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-success">Statut non valide</span>
+                                        }
+                                    }
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3 mb-2">
+                            <div class="col-sm-12">
+                                <p class="font-weight-bold">Notes de commande</p>
+
+                                <div class="form-group">
+                                    <textarea class="form-control rounded-0 order-note" rows="5" readonly>@Model.OrderDetails.OrderNote</textarea>
+                                </div>
+
+                                <div class="table-responsive-sm">
+                                    <table class="table table-striped table-hover" width="100%" id="dtDetails">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th class="th-sm font-weight-bold">
+                                                    Nom de produit
+                                                </th>
+                                                <th class="th-sm font-weight-bold">
+                                                    Quantite
+                                                </th>
+                                                <th class="th-sm font-weight-bold">
+                                                    Prix Unitarie
+                                                </th>
+                                                <th class="th-sm font-weight-bold">
+                                                    Taxe
+                                                </th>
+                                                <th class="th-sm font-weight-bold">
+                                                    Prix
+                                                </th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+
+                                            @foreach (var item in Model.OrderItems)
+                                            {
+                                                <tr>
+                                                    <td class="text-capitalize">@item.ProductName</td>
+                                                    <td>@item.ProductQuantity.ToString("N0")</td>
+                                                    <td>@item.ProductPrice.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)</td>
+                                                    <td>@item.ProductTaxAmount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)</td>
+                                                    <td>@item.SubTotal.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)</td>
+                                                </tr>
+                                            }
+
+                                        </tbody>
+
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer border-0 text-center">
+
+                        <button id="btn-refuse" type="button" class="btn white-button mr-5 btn-padding w-25" hidden onclick='changeOrderStatus(7);'>Refuser</button>
+                        <button id="btn-accept" type="button" class="btn btn-success btn-rounded mr-5 btn-padding border-0 w-25" hidden onclick='changeOrderStatus(2);'>Accepter</button>
+
+                        <button id="btn-cancel" type="button" class="btn white-button mr-5 btn-padding w-25" hidden onclick='changeOrderStatus(6);'>Cancel Order</button>
+                        @*<button id="btn-forpickup" type="button" class="btn login-button mr-5 btn-padding btn-primary border-0 w-25" hidden onclick='changeOrderStatus(4);'>Prête pour collecte</button>*@
+                        <button id="btn-fordelivery" type="button" class="btn btn-rounded mr-5 btn-padding btn-danger border-0 w-25" hidden onclick='changeOrderStatus(3);'>Prête pour livraison</button>
+
+                        <button id="btn-complete" type="button" class="btn btn-rounded mr-5 btn-padding btn-danger border-0 w-25" hidden onclick='changeOrderStatus(5);'>Complétez la commande</button>
+
+                        <a id="btn-close" href="~/Order" class="btn white-button mr-5 btn-padding w-25" hidden>Fermer</a>
+
+                        @*<label id="expiration-time"><small class="d-flex justify-content-end flex-row text-danger">Refus dans in 14:59</small></label>*@
+                    </div>
+
+                </div>
+            </div>
+        </form>
+
+        @* flags *@
+        @{
+            var orderId = (int)Model.OrderDetails.OrderID;
+            var status = (int)Model.OrderDetails.OrderProgressStatus;
+            var method = (int)Model.OrderDetails.DeliveryMethod;
+        }
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dtDetails').DataTable({
+                "info": true,
+                "responsive": true,
+                "sort": false,
+                "lengthChange": false,
+                "filter": false,
+                "language": {
+                    "info": "Afficher de _START_ à _END_ sur _TOTAL_ entrées",
+                    "emptyTable": "Aucune donnée disponible dans le tableau",
+                    "infoEmpty": "Affichage 0 à 0 sur 0 entrées",
+                    "search": "Cherchez:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                },
+            });
+            $('.dataTables_length').addClass('bs-select');
+            $("#dtDetails_info").addClass("small");
+
+            //toggle action buttons
+            var status = @Html.Raw(status);
+            var dMethod = @Html.Raw(method);
+            if (status == 1) { //placed
+                $('#expiration-time').prop('hidden', false);
+                $('#btn-refuse').prop('hidden', false);
+                $('#btn-accept').prop('hidden', false);
+                $('#btn-cancel').prop('hidden', true);
+                //$('#btn-forpickup').prop('hidden', true);
+                $('#btn-fordelivery').prop('hidden', true);
+                $('#btn-complete').prop('hidden', true);
+                $('#btn-close').prop('hidden', true);
+            }
+            else if (status == 2) { //inprogress
+                $('#expiration-time').prop('hidden', true);
+                $('#btn-refuse').prop('hidden', true);
+                $('#btn-accept').prop('hidden', true);
+                $('#btn-cancel').prop('hidden', false);
+                //if (dMethod == 1) {
+                //    $('#btn-forpickup').prop('hidden', false);
+                //}
+                //else {
+                //    $('#btn-fordelivery').prop('hidden', false);
+                //}
+                $('#btn-fordelivery').prop('hidden', false);
+                $('#btn-complete').prop('hidden', true);
+                $('#btn-close').prop('hidden', true);
+            }
+            //else if (status == 3 || status == 4) { //RFP, OFD
+            //    $('#expiration-time').prop('hidden', true);
+            //    $('#btn-refuse').prop('hidden', true);
+            //    $('#btn-accept').prop('hidden', true);
+            //    $('#btn-cancel').prop('hidden', true);
+            //    $('#btn-forpickup').prop('hidden', true);
+            //    $('#btn-fordelivery').prop('hidden', true);
+            //    $('#btn-complete').prop('hidden', false);
+            //    $('#btn-close').prop('hidden', true);
+            //}
+            else {
+                $('#expiration-time').prop('hidden', true);
+                $('#btn-refuse').prop('hidden', true);
+                $('#btn-accept').prop('hidden', true);
+                $('#btn-cancel').prop('hidden', true);
+               // $('#btn-forpickup').prop('hidden', true);
+                $('#btn-fordelivery').prop('hidden', true);
+                $('#btn-complete').prop('hidden', true);
+                $('#btn-close').prop('hidden', false);
+            }
+        });
+
+        function changeOrderStatus(stat) {
+
+                var parameters = {
+                    OrderId: @Html.Raw(orderId),
+                    ProgressStatus: stat
+                };
+
+                $.ajax(
+                    {
+                        type: 'POST',
+                        url: BASEPATH + '/Order/ChangeOrderStatus',
+                        contentType: 'application/json',
+                        data: JSON.stringify(parameters),
+                        beforeSend: function () {
+                            $("#GenericModal").modal('show');
+                            $("#GenericModalTitle").text("Nous mettons à jour votre statut de commande. Merci de patienter");
+                            $("#savingGenericLoader").show();
+                        },
+                        success: function (result) {
+                            if (result.statusCode == 200) {
+                                $("#GenericModal").modal('show');
+                                $("#savingGenericLoader").hide();
+                                $("#GenericModalTitle").text(result.message);
+                                $("#successIcon").show();
+                                $("#successBtn").show();
+                            }
+                        },
+                        failed: function (e, x, h) {
+                            console.log(e); console.log(h); console.log(x);
+                        }
+                    }
+                );
+            }
+
+        $("#successBtn").on('click', function () {
+            window.location.replace(BASEPATH + "/Order/OrderDetails?rid=" + @Html.Raw(orderId));
+        });
+
+        function createJob() {
+            var parameters = {
+                OrderId: @Html.Raw(orderId),
+                PickupComment: "none",
+                DeliveryComment: "none",
+                TransportType: "bike" ,
+                PackageType: "small",
+                PackageDescription: "none"
+            };
+
+            $.ajax(
+                {
+                    type: 'POST',
+                    url: BASEPATH + '/Order/CreateJob',
+                    contentType: 'application/json',
+                    data: JSON.stringify(parameters),
+                    beforeSend: function () {
+                        $("#GenericModal").modal('show');
+                        $("#GenericModalTitle").text("Création d'un appel à Stuart.Merci de patienter");
+                        $("#savingGenericLoader").show();
+                        $("#errorIcon").hide();
+                        $("#errorBtn").hide();
+                        $("#successIcon").hide();
+                        $("#successBtn").hide();
+                    },
+                    success: function (result) {
+                        console.log(result);
+
+                        if (result.statusCode == 200) {
+                            setTimeout(function () {
+                                changeOrderStatus(3);
+                            }, 1000);
+                        }
+                        else {
+                            $("#GenericModalTitle").text(result.message);
+                            $("#savingGenericLoader").hide();
+                            $("#errorIcon").show();
+                            $("#errorBtn").show();
+                        }
+                    },
+                    failed: function (e, x, h) {
+                        console.log(e); console.log(h); console.log(x);
+                    }
+                }
+            );
+        }
+    </script>
+}

@@ -1,0 +1,147 @@
+﻿@using PharmaMoov.Models.User
+@model List<UserHelpRequestView>
+@{
+    ViewData["Title"] = "Demande d’aide";
+    Layout = "~/Views/Shared/_SALayout.cshtml";
+}
+<style type="text/css">
+    .table td {
+        word-break: break-word !important;
+    }
+</style>
+
+<partial name="~/Views/Shared/_GenericModal.cshtml" />
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">
+                Réclamations
+            </h3>
+        </nav>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <ul class="nav nav-tabs rounded-0" id="myTab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="allComplaints-tab" data-toggle="tab" href="#allComplaints" role="tab" aria-controls="allComplaints"
+                                   aria-selected="true"><h6 class="text-black-50">Toutes les plaintes  </h6></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-success" id="pending-tab" data-toggle="tab" href="#pending" role="tab" aria-controls="profile"
+                                   aria-selected="false"><h6 class="text-success">Ouvert </h6></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-warning" id="resolved-tab" data-toggle="tab" href="#resolved" role="tab" aria-controls="profile"
+                                   aria-selected="false"><h6 class="text-warning">Résolues </h6></a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="requestTabContent">
+
+                            <div class="tab-pane fade show active" id="allComplaints" role="tabpanel" aria-labelledby="allComplaints-tab">
+                                <div class="table-responsive-sm">
+                                    <table class="table table-hover table-bordered table-striped display" id="dtAllComplaintsList">
+                                        <partial name="~/Views/SAdmin/_HelpRequestList.cshtml" model="@Model" />
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="pending" role="tabpanel" aria-labelledby="pending-tab">
+                                <div class="table-responsive-sm">
+                                    <table class="table table-hover table-bordered table-striped display" id="dtPendingRequests">
+                                        <partial name="~/Views/SAdmin/_HelpRequestList.cshtml" model="@Model.Where(x => x.RequestStatus == PharmaMoov.Models.HelpRequestStatus.PENDING)" />
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="resolved" role="tabpanel" aria-labelledby="resolved-tab">
+                                <div class="table-responsive-sm">
+                                    <table class="table table-hover table-bordered table-striped display" id="dtResolvedRequests">
+                                        <partial name="~/Views/SAdmin/_HelpRequestList.cshtml" model="@Model.Where(x => x.RequestStatus == PharmaMoov.Models.HelpRequestStatus.RESOLVED)" />
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dtAllComplaintsList').DataTable({
+                "info": true,
+                "autoWidth": true,
+                "lengthChange": false,
+                "language": {
+                    "info": "Afficher de _START_ à _END_ sur _TOTAL_ entrées",
+                    "emptyTable": "Aucune donnée disponible dans le tableau",
+                    "infoEmpty": "Affichage 0 à 0 sur 0 entrées",
+                    "search": "Cherchez:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                },
+                "order": [[0, "asc"]],
+                "searching": false,
+                "createdRow": function (row, data, dataIndex) {
+                    if ($(row).find('td[data-status]').data('status') == 'RESOLVED') {
+                        $(row).find('.resolveBtn').hide();
+                    }
+                }
+            });
+
+            $('#dtPendingRequests').DataTable({ info: true, lengthChange: false, "order": [[0, "asc"]], "searching": false });
+
+            $('#dtResolvedRequests').DataTable({
+                "info": true,
+                "lengthChange": false,
+                "order": [[0, "asc"]],
+                "searching": false,
+                "createdRow": function (row, data, dataIndex) {
+                    $(row).find('.resolveBtn').hide();
+                }
+            });
+
+            $('.dataTables_length').addClass('bs-select');
+        });
+
+        function markAsResolved(rid, status) {
+            var parameters = {
+                RecordId: rid,
+                HelpRequestStatus: status
+            }
+
+            $.ajax(
+                {
+                    type: 'POST',
+                    url: BASEPATH + '/SAdmin/ChangeHelpRequestStatus',
+                    contentType: 'application/json',
+                    data: JSON.stringify(parameters),
+                    beforeSend: function () {
+                        $("#GenericModal").modal('show');
+                        $("#GenericModalTitle").text("Merci de patienter");
+                        $("#savingGenericLoader").show();
+                    },
+                    success: function (result) {
+                        window.location.replace(BASEPATH + "/SAdmin/HelpRequest");
+                    },
+                    failed: function (e, x, h) {
+                        console.log(e); console.log(h); console.log(x);
+                    }
+                }
+            );
+        }
+
+    </script>
+}

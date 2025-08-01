@@ -1,0 +1,234 @@
+﻿@using PharmaMoov.Models.Shop
+@model IEnumerable<ShopOpeningHourDTO>
+
+@{
+    ViewData["Title"] = "Shop Hours";
+}
+
+<partial name="~/Views/Shared/_GenericModal.cshtml" />
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Heures d'ouvertures</h3>
+        </nav>
+        <div class="card">
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-sm-12">
+                        <h6 class="font-weight-bold">Sélectionnez l'heure en fonction des heures d'ouverture de votre boutique</h6>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <h3 class="header-custom-color text-center mb-3">Matin</h3>
+
+                                @foreach (var item in Model)
+                                {
+                                    var startAM = "sAM" + "-" + (int)item.DayOfWeek;
+                                    var endAM = "eAM" + "-" + (int)item.DayOfWeek;
+                                    var dayWk = "dWk" + "-" + (int)item.DayOfWeek;
+
+                                    <input type="hidden" value="@item.ShopOpeningHourID" id="@dayWk" />
+
+                                    <div class="form-row mt-3 mb-3">
+                                        <div class="col-3">
+                                            @if (item.DayOfWeek == DayOfWeek.Sunday)
+                                            {
+                                                <label asp-for="@item.DayOfWeek">Dimanche</label>
+                                            }
+                                            else if (item.DayOfWeek == DayOfWeek.Monday)
+                                            {
+                                                <label asp-for="@item.DayOfWeek">Lundi</label>
+                                            }
+                                            else if (item.DayOfWeek == DayOfWeek.Tuesday)
+                                            {
+                                                <label asp-for="@item.DayOfWeek">Mardi</label>
+                                            }
+                                            else if (item.DayOfWeek == DayOfWeek.Wednesday)
+                                            {
+                                                <label asp-for="@item.DayOfWeek">Mercredi</label>
+                                            }
+                                            else if (item.DayOfWeek == DayOfWeek.Thursday)
+                                            {
+                                                <label asp-for="@item.DayOfWeek">Jeudi</label>
+                                            }
+                                            else if (item.DayOfWeek == DayOfWeek.Friday)
+                                            {
+                                                <label asp-for="@item.DayOfWeek">Vendredi</label>
+                                            }
+                                            else if (item.DayOfWeek == DayOfWeek.Saturday)
+                                            {
+                                                <label asp-for="@item.DayOfWeek">Samedi</label>
+                                            }
+                                        </div>
+                                        <div class="col-4">
+                                            <select class="browser-default custom-select custom-select-2" id="@startAM" asp-for="@item.StartTimeAM"
+                                                    asp-items="@(new SelectList(ViewBag.TimeSlotsAM, "Key", "Value"))">
+                                                <option value="0">Fermé</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-1 d-flex justify-content-center">
+                                            <label>to</label>
+                                        </div>
+                                        <div class="col-4">
+                                            <select class="browser-default custom-select custom-select-2" id="@endAM" asp-for="@item.EndTimeAM"
+                                                    asp-items="@(new SelectList(ViewBag.TimeSlotsAM, "Key", "Value"))">
+                                                <option value="0">Fermé</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="col-sm-4">
+                                <h3 class="header-custom-color text-center mb-3">Après-midi</h3>
+
+                                @foreach (var item in Model)
+                                {
+                                    var startPM = "sPM" + "-" + (int)item.DayOfWeek;
+                                    var endPM = "ePM" + "-" + (int)item.DayOfWeek;
+                                    //var isOpen = "isOpen" + "-" + (int)item.DayOfWeek;
+
+                                    <div class="form-row mt-3 mb-3">
+                                        <div class="col-5">
+                                            <select class="browser-default custom-select custom-select-2" id="@startPM" asp-for="@item.StartTimePM"
+                                                    asp-items="@(new SelectList(ViewBag.TimeSlotsPM, "Key", "Value"))">
+                                                <option value="0">Fermé</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-1 d-flex justify-content-center">
+                                            <label>to</label>
+                                        </div>
+                                        <div class="col-6">
+                                            <select class="browser-default custom-select custom-select-2" id="@endPM" asp-for="@item.EndTimePM"
+                                                    asp-items="@(new SelectList(ViewBag.TimeSlotsPM, "Key", "Value"))">
+                                                <option value="0">Fermé</option>
+                                            </select>
+                                        </div>
+                                        @*<div class="col-3">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" name="now-open" asp-for="@item.NowOpen" id="@isOpen">
+                                                <label class="form-check-label" for="NowOpen">Ouvert</label>
+                                            </div>
+                                        </div>*@
+                                    </div>
+                                }
+
+                            </div>
+
+                            <div class="col-sm-4">
+                                <h3 class="header-custom-color text-center mb-3">Soir</h3>
+
+                                @foreach (var item in Model)
+                                {
+                                    var startEve = "sEve" + "-" + (int)item.DayOfWeek;
+                                    var endEve = "eEve" + "-" + (int)item.DayOfWeek;
+                                   // var eveDOW = "eveDOW" + "-" + (int)item.DayOfWeek;
+                                    var isOpen = "isOpen" + "-" + (int)item.DayOfWeek;
+
+                                    <div class="form-row mt-3 mb-3">
+                                        <div class="col-4">
+                                            <select class="browser-default custom-select custom-select-2" id="@startEve" asp-for="@item.StartTimeEvening"
+                                                    asp-items="@(new SelectList(ViewBag.TimeSlotsEve, "Key", "Value"))">
+                                                <option value="0">Fermé</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-1 d-flex justify-content-center">
+                                            <label>to</label>
+                                        </div>
+                                        <div class="col-4">
+                                            <select class="browser-default custom-select custom-select-2" id="@endEve" asp-for="@item.EndTimeEvening"
+                                                    asp-items="@(new SelectList(ViewBag.TimeSlotsEve, "Key", "Value"))">
+                                                <option value="0">Fermé</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-3" hidden>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" name="now-open" asp-for="@item.NowOpen" id="@isOpen">
+                                                <label class="form-check-label" for="@isOpen">Ouvert</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+                            </div>
+                        </div>
+
+                        <div class="row mt-5 mb-5">
+                            <div class="col-sm-12">
+                                <button class="btn login-button mr-3 btn-padding" type="button" onclick='saveShopHours();'>Soumettre</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script type="text/javascript">
+
+        function saveShopHours() {
+            var shopHours = [];
+
+            for (var x = 0; x < 7; x++) {
+
+                var isOpen = 'false';
+                if ($('#isOpen-' + x).is(":checked")) {
+                    isOpen = 'true'
+                }
+
+                var items = {
+                    ShopOpeningHourID: $('#dWk-' + x).val(),
+                    StartTimeAM: $('#sAM-' + x).val(),
+                    EndTimeAM: $('#eAM-' + x).val(),
+                    StartTimePM: $('#sPM-' + x).val(),
+                    EndTimePM: $('#ePM-' + x).val(),
+                    StartTimeEvening: $('#sEve-' + x).val(),
+                    EndTimeEvening: $('#eEve-' + x).val(),
+                    NowOpen: isOpen
+                }
+
+                shopHours.push(items);
+            }
+            // console.log(shopHours);
+
+            var parameters = {
+                OpeningHours: shopHours
+            };
+
+            $.ajax(
+                {
+                    type: 'POST',
+                    url: BASEPATH + '/Shop/SetShopHours',
+                    contentType: 'application/json',
+                    data: JSON.stringify(parameters),
+                    beforeSend: function () {
+                        $("#GenericModal").modal('show');
+                        $("#GenericModalTitle").text("Merci de patienter");
+                        $("#savingGenericLoader").show();
+                    },
+                    success: function (result) {
+                        if (result.statusCode == 200) {
+                            $("#GenericModal").modal('show');
+                            $("#savingGenericLoader").hide();
+                            $("#GenericModalTitle").text(result.message);
+                            $("#successIcon").show();
+                            $("#successBtn").show();
+                        }
+                    },
+                    failed: function (e, x, h) {
+                        console.log(e); console.log(h); console.log(x);
+                    }
+                }
+            );
+        }
+    </script>
+}

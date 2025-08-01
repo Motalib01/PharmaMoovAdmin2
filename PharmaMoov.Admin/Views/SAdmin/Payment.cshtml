@@ -1,0 +1,74 @@
+﻿@{
+    ViewData["Title"] = "Paiements";
+    Layout = "~/Views/Shared/_SALayout.cshtml";
+}
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Paiements</h3>
+        </nav>
+        <div class="card">
+            <div class="card-body">
+                <div class="row p-2">
+                    <div class="col-sm-12">
+                        <div class="table-responsive-sm">
+                            <table id="dtPaiements" class="table table-striped" width="100%">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th class="th-sm font-weight-bold">
+                                            Numéro
+                                        </th>
+                                        <th class="th-sm font-weight-bold">
+                                            Date de création
+                                        </th>
+                                        <th class="th-sm font-weight-bold">
+                                            Montant total
+                                        </th>
+                                        <th class="th-sm font-weight-bold">
+                                            Date de paiement
+                                        </th>
+                                        <th class="th-sm font-weight-bold">
+                                            Statut
+                                        </th>
+                                        <th class="th-sm font-weight-bold">
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>INV-024</td>
+                                        <td>20 Mars 2020</td>
+                                        <td>‎€ 30.00</td>
+                                        <td>20 Mars 2020</td>
+                                        <td>
+                                            <p class="badge badge-success text-capitalize">Payé</p>
+                                            @*<p class="badge badge-danger text-capitalize">Refunded</p>*@
+                                        </td>
+                                        <td>
+                                            @*Open PDF INVOICE*@
+                                            <a href="#" class="text-gray"><i class="fas fa-print"></i></a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dtPaiements').DataTable({
+                "info": false,
+                "lengthChange": false
+            });
+            $('.dataTables_length').addClass('bs-select');
+        });
+    </script>
+}

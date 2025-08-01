@@ -1,0 +1,23 @@
+﻿@using PharmaMoov.Models.Shop
+@model PrivacyPolicy
+
+@{
+    ViewData["Title"] = "Politique de Confidentialité";
+    Layout = "~/Views/Shared/_Startup.cshtml";
+}
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Politique de Confidentialité</h3>
+            <a href="@Url.Action("Contact","Shop")" class="text-primary"><i class="fas fa-long-arrow-alt-left"></i> Retour</a>
+        </nav>
+        <img src="~/img/logo.png" style="margin:auto;display:block;" />
+        <br />
+        <div class="card">
+            <div class="card-body">
+                @Html.Raw(Model.PrivacyPolicyBody)
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,103 @@
+﻿@model PharmaMoov.Models.User.NewUserGeneralConcern
+
+@{
+    ViewData["Title"] = "Contact PharmaMoov";
+}
+
+<partial name="~/Views/Shared/_GenericModal.cshtml" />
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Contact PharmaMoov</h3>
+        </nav>
+        <div class="card bg-chipchap">
+            <div class="card-body">
+                <h5 class="card-title">Entrer en Contact</h5>
+
+                <form asp-action="Contact" method="post">
+                    <div class="row mt-4">
+                        <div class="col-sm-6">
+                            <!--Grid row-->
+                            <div class="row mb-2">
+                                @*<div class="col-2 text-center">
+                                    <i class="fas fa-map-marker-alt fa-2x pharma-green-text"></i>
+                                </div>*@
+                                @*<div class="col-10 text-left">
+                                    <p> Champ de Mars, 5 Avenue Anatole <br /> 75007 Paris, France</p>
+                                </div>*@
+                            </div>
+                            <!--Grid row-->
+                            <!--Grid row-->
+                            <div class="row mb-2">
+                                <div class="col-2 text-center">
+                                    <i class="fas fa-mobile-alt fa-2x pharma-green-text"></i>
+                                </div>
+                                <div class="col-10 text-left">
+                                    <p> 06 46 74 95 97</p>
+                                </div>
+                            </div>
+                            <!--Grid row-->
+                            <!--Grid row-->
+                            <div class="row mb-2">
+                                <div class="col-2 text-center">
+                                    <i class="fas fa-envelope-open fa-2x pharma-green-text"></i>
+                                </div>
+                                <div class="col-10 text-left">
+                                    <p> Contact@pharmamoov.fr</p>
+                                </div>
+                            </div>
+                            <!--Grid row-->
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="row">
+                                <div class="col-4">
+                                    <h5>Suivez-nous</h5>
+                                </div>
+                                <div class="col-8 text-left">
+                                    <!-- Social buttons -->
+                                    <ul class="list-unstyled list-inline">
+                                        <li class="list-inline-item">
+                                            <a href="http://www.facebook.com/PharmaMoov-103440048619782/?ref=pages_you_manage" target="_blank" class="fb-ic ml-0">
+                                                <i class="fab fa-facebook fa-2x mr-3 pharma-green-text"> </i>
+                                            </a>
+                                            <!--Instagram-->
+                                            <a href="http://www.instagram.com/pharmamoov" target="_blank" class="ins-ic">
+                                                <i class="fab fa-instagram fa-2x mr-3 pharma-green-text"> </i>
+                                            </a>
+                                        </li>
+                                        @*<li class="list-inline-item">
+                                            <a href="#" class="btn-floating btn-tw ">
+                                                <i class="fab fa-twitter fa-2x"> </i>
+                                            </a>
+                                        </li>*@
+                                    </ul>
+                                    <!-- Social buttons -->
+                                </div>
+                            </div>
+                            <a href="@Url.Action("TermsAndConditions", "FAQs")">Termes et conditions</a><br />
+                            <a href="@Url.Action("PrivacyPolicy", "FAQs")">Politique de confidentialité</a><br />
+                            <p class="pt-2">&copy; 2021 PharmaMoov. Tous droits réservés.</p>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".spinner-border").hide();
+        });
+
+        $("#successBtn").on('click', function () {
+            window.location.replace(BASEPATH + "/Shop/Contact/");
+        });
+    </script>
+}

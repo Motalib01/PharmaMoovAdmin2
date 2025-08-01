@@ -1,0 +1,155 @@
+﻿@using PharmaMoov.Models.Campaign
+@model Campaign
+
+@{
+    ViewData["Title"] = "Bannière ";
+    Layout = "~/Views/Shared/_SALayout.cshtml";
+}
+<partial name="~/Views/Shared/_GenericModal.cshtml" />
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Ajouter une bannière</h3>
+        </nav>
+        @*<div class="row mt-3 mb-3">
+            <div class="col-sm-6">
+                <a href="/Promo/ShopBanners" class="text-primary"><i class="fas fa-long-arrow-alt-left"></i> Retour</a>
+            </div>
+            <div class="col-sm-6 d-flex justify-content-end">
+                <div class="custom-control custom-switch  float-right">
+                    <input type="checkbox" class="custom-control-input check" id="customSwitch1">
+                    <label class="custom-control-label red-text" for="customSwitch1" id="lblActive">Inactif</label> 
+                </div>
+            </div>
+        </div>*@
+        <div class="card">
+            <form asp-action="AddBanner" asp-controller="Promo" method="post">
+                <input type="hidden" asp-for="CampaignRecordID" />
+                <input type="hidden" asp-for="Name" />
+                <input type="hidden" asp-for="Description" />
+                <input type="hidden" asp-for="LastEditedDate" />
+                <input type="hidden" asp-for="CreatedBy" />
+                <input type="hidden" asp-for="CreatedDate" />
+                <input type="hidden" asp-for="IsEnabled" value="true" />
+                <input type="hidden" asp-for="IsEnabledBy" value="true" />
+                <div class="card-body">
+                    <div class="form-group required mt-4 mb-4">
+                        <label class="col-form-label control-label">Télécharger une bannière :</label>
+                        <div class="input-group">
+                            <div class="custom-file">
+                                <input type="text" asp-for="ImageUrl">
+                                <input type="file" class="custom-file-input" id="UploadShopBanner" accept="image/*">
+                                <label class="custom-file-label" id="UploadShopTextLabel" for="UploadShopIcon">Browse</label>
+                                <span asp-validation-for="ImageUrl" class="text-danger small"></span>
+                            </div>
+                        </div>
+                        @*<small class="form-text text-muted">
+                            (Pré-requis : la taille du fichier doit être moins de 500kb et avec resolution maximale 327x200)
+                        </small>*@
+                    </div>
+
+                    <div class="form-group mt-4 mb-4">
+                        <label class="col-form-label control-label">Lien vers la pharmacie (facultatif) :</label>
+                        <select class="browser-default custom-select" asp-for="ShopId"
+                                asp-items="@(new SelectList(ViewBag.ShopList, "ShopId", "Name"))">
+                            <option value="null" selected>Select Pharmacy</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mt-4 mb-4">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" id="IsProductOfferBanner1" asp-for="IsProductOfferBanner" value="false" />
+                            <label class="form-check-label" for="IsProductOfferBanner1">Bannière d'accueil </label>
+                        </div>
+
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" id="IsProductOfferBanner2" asp-for="IsProductOfferBanner" value="true" />
+                            <label class="form-check-label" for="IsProductOfferBanner2">Bannière en vedette </label>
+                        </div>
+                    </div>
+
+                    @*<div class="form-group mt-4 mb-4">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" asp-for="IsProductOfferBanner">
+                            <label class="custom-control-label" asp-for="IsProductOfferBanner">Featured Banner</label>
+                        </div>
+                    </div>*@
+
+                    <img id="imgPrevUploadShopBanner" style="display:none;width:327px; height:200px;" src="" />
+                    <div class="spinner-border" role="status" id="imageLoadingUploadShopBanner" style="display:none;">
+                        <span class="sr-only">Chargement...</span>
+                    </div>
+                    <div class="form-group mt-5 mb-5">
+                        <div class="col-sm-12">
+                            <a class="btn white-button mr-3 btn-padding" href="/Promo/ShopBanners">Annuler</a>
+                            <button type="submit" class="btn login-button mr-3 btn-padding">Soumettre</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //$("#customSwitch1").change(function () {
+            //    if ($(this).prop("checked") == true) {
+            //        $("#IsEnabled").val("true");
+            //        $("#lblActive").text("Actif");
+            //        $("#lblActive").removeClass("red-text");
+            //    } else {
+            //        $("#IsEnabled").val("false");
+            //        $("#lblActive").text("Inactif");
+            //        $("#lblActive").addClass("red-text");
+            //    }
+            //});
+
+            var showModal = $("#ShowGenericModal").val();
+            if (showModal == 1) {
+                $("#GenericModal").modal('show');
+                $("#successIcon").show();
+                $("#successBtn").show();
+            }
+            if (showModal == 2) {
+                $("#GenericModal").modal('show');
+                $("#errorIcon").show();
+                $("#errorBtn").show();
+            }
+
+            $("#GenericModal").on('hidden.bs.modal', function () {
+                if (showModal == 1) {
+                    //window.location.replace("/Promo/AddBanner?cId=" + $("#CampaignRecordID").val());
+                    window.location.replace("/Promo/ShopBanners");
+                }
+            });
+
+            //$("#ShopId").on('change', function () { 
+            //    window.location.replace("/Promo/AddBanner?cId=" + $("#ShopId option:selected").val());
+            //});
+
+            $("#UploadShopBanner").change(function () {
+                $("#UploadShopTextLabel").text("Choisir fichier");
+                validateShopImageFiles("UploadShopBanner"); 
+            });
+
+            if ($("#ImageUrl").val().length > 0) {
+                console.log("seems ImageIsNot null? ImageUrl >>>" + $("#ImageUrl").val());
+                $("#imgPrevUploadShopBanner").attr('src', $("#ImageUrl").val())
+                $("#imgPrevUploadShopBanner").show();
+                
+            } else
+            {
+                $("#imgPrevUploadShopBanner").hide();
+            }
+
+            //validate hidden fields
+            $.validator.setDefaults({
+                ignore: []
+            });
+        });
+    </script>
+}

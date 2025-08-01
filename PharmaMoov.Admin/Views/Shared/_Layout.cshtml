@@ -1,0 +1,202 @@
+﻿@using PharmaMoov.Admin.Helpers
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor _httpCtxtAc;
+@using PharmaMoov.Models.Admin;
+
+@{
+    ISession session = _httpCtxtAc.HttpContext.Session;
+
+    var _adminUCtxt = session.GetObjectFromJson<AdminUserContext>("adminUserContext");
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - PharmaMoov</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+    <!-- Google Fonts Poppins -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+
+    <!-- Material Design Bootstrap -->
+    <link rel="stylesheet" href="~/mdb/css/mdb.min.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/mdb/css/style.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/mdb/css/datatables.min.css" asp-append-version="true">
+
+    <!-- Your custom styles (optional) -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+</head>
+<body>
+
+    <div class="wrapper d-flex align-items-stretch">
+        <nav id="sidebar" class="navbar-fixed-left">
+            <div class="custom-menu">
+                <button type="button" id="sidebarCollapse" class="btn btn-primary">
+                    <i class="fa fa-bars"></i>
+                    <span class="sr-only">Toggle Menu</span>
+                </button>
+            </div>
+
+            <div class="pt-3 pb-3">
+                <img src="~/img/logo.png" class="mx-auto d-block" style="width: 35%;" />
+
+                <ul class="list-unstyled components mt-3" id="sidebar-nav">
+                    @if (_adminUCtxt.AdminInfo.UserTypeId == PharmaMoov.Models.UserTypes.SHOPADMIN || _adminUCtxt.AdminInfo.UserTypeId == PharmaMoov.Models.UserTypes.OPERATIONMANAGER)
+                    {
+                        <li class="@(ViewBag.Current == "Dashboard" ? "active" : "")">
+                            <a href="~/Shop/Dashboard"><span class="fas fa-th mr-3 ml-3"></span>Tableau de bord</a>
+                        </li>
+                        <li class="@(ViewBag.Current == "Order" ? "active" : "")">
+                            <a href="~/Order"><span class="fas fa-tasks mr-3 ml-3"></span>Gestion de commandes</a>
+                        </li>
+                        <li class="@(ViewBag.Current == "Product" ? "active" : "")">
+                            <a href="~/Product/Index"><span class="fas fa-box-open mr-3 ml-3"></span>Liste des produits  ( <b>En Stock </b> )</a>
+                        </li>
+                        <li class="@(ViewBag.Current == "ExternalProduct" ? "active" : "")">
+                            <a href="~/ExternalProduct/Index"><span class="fas fa-box-open mr-3 ml-3"></span>Liste des produits</a>
+                        </li>
+                        <li class="@(ViewBag.Current == "Prescriptions" ? "active" : "")">
+                            <a href="~/Prescription"><span class="fas fa-prescription mr-3 ml-3"></span>Prescription</a>
+                        </li>
+                        <li class="@(ViewBag.Current == "OrderHistory" ? "active" : "")">
+                            <a href="~/Order/History"><span class="fas fa-history mr-3 ml-3"></span>Historique de commandes</a>
+                        </li>
+                        <li class="@(ViewBag.Current == "Payment" ? "active" : "")">
+                            <a href="~/Payment"><span class="fas fa-credit-card mr-3 ml-3"></span>Paiements</a>
+                        </li>
+                        <li class="@(ViewBag.Current == "Reviews" ? "active" : "")">
+                            <a href="~/Reviews"><span class="fas fa-star mr-3 ml-3"></span>Commentaires</a>
+                        </li>
+                        <li class="@(ViewBag.Current == "Users" ? "active" : "")">
+                            <a href="~/Admin"><span class="fas fa-users mr-3 ml-3"></span>Utilisateurs</a>
+                        </li>
+                        <li class="@(ViewBag.Current == "ShopHours" ? "active" : "")">
+                            <a href="~/Shop/ShopHours"><span class="fas fa-business-time mr-3 ml-3"></span>Horaires de la pharmacie</a>
+                        </li>
+                        <li class="@(ViewBag.Current == "Profile" ? "active" : "")">
+                            <a href="~/Shop/EditProfile"><span class="fas fa-store-alt mr-3 ml-3"></span>Profil</a>
+                        </li>
+                        <li class="@(ViewBag.Current == "Documents" ? "active" : "")">
+                            <a href="~/Shop/Documents"><span class="fas fa-file-alt mr-3 ml-3"></span>Documents</a>
+                        </li>
+                        <li class="@(ViewBag.Current == "Contact" ? "active" : "")">
+                            <a href="~/Shop/Contact"><span class="fas fa-question-circle mr-3 ml-3"></span>Contact PharmaMoov</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="@(ViewBag.Current == "Order" ? "active" : "")">
+                            <a href="~/Order"><span class="fas fa-tasks mr-3 ml-3"></span>Gestion de commandes</a>
+                        </li>
+                    }
+                </ul>
+
+            </div>
+        </nav>
+
+        <!-- Page Content  -->
+        <div id="content">
+            <!-- Navbar -->
+            <nav class="navbar navbar-expand-md navbar-light navbar-custom navbar-fixed-top">
+
+                <!-- Links -->
+                <div class="collapse navbar-collapse" id="basicExampleNav4">
+
+                    <!-- Right -->
+                    <ul class="navbar-nav ml-auto nav-flex-icons float-right pt-2 pr-5">
+                        <li class="nav-item dropdown mr-4">
+                            <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-333" data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">
+                                <h4><i class="far fa-bell text-gray"></i></h4>
+                            </a>
+                            <div id="divOrdersNotification" class="dropdown-menu dropdown-menu-right dropdown-default scrollable-menu" aria-labelledby="divOrdersNotification">
+                                <div class="dropdown-item">Notifications</div>
+                                <div class="dropdown-divider"></div>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <div class="row d-flex">
+                                <div class="p-2">
+                                    <img src="@_adminUCtxt.AdminInfo.ImageUrl" class="rounded-circle z-depth-0" style=" width: 40px; height: 40px;">
+                                </div>
+                                <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-55" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <div class="mr-5">
+                                        <h6 class="m-0">@_adminUCtxt.AdminInfo.FirstName @_adminUCtxt.AdminInfo.LastName</h6>
+                                        @if (_adminUCtxt.AdminInfo.UserTypeId == PharmaMoov.Models.UserTypes.SHOPADMIN)
+                                        {
+                                            <span>
+                                                Administrateur pharmacie
+                                            </span>
+                                        }
+                                        else if (_adminUCtxt.AdminInfo.UserTypeId == PharmaMoov.Models.UserTypes.OPERATIONMANAGER)
+                                        {
+                                            <span>Operation Manager</span>
+                                        }
+                                        else
+                                        {
+                                            <span>Order Picker</span>
+                                        }
+                                    </div>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-lg-right dropdown-secondary"
+                                     aria-labelledby="navbarDropdownMenuLink-55">
+                                    <a class="dropdown-item text-danger" href="~/Home/AdminChangePassword">Changer le mot de passe</a>
+                                    <a class="dropdown-item text-danger" href="~/Home/Logout">Déconnexion</a>
+                                </div>
+                            </div>
+
+
+                        </li>
+                    </ul>
+
+                </div>
+                <!-- Links -->
+
+            </nav>
+            <!-- Navbar -->
+
+            <div class="container">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script type="text/javascript" src="~/mdb/js/jquery.min.js" asp-append-version="true"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript" src="~/mdb/js/popper.min.js" asp-append-version="true"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript" src="~/mdb/js/bootstrap.min.js" asp-append-version="true"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="~/mdb/js/mdb.min.js" asp-append-version="true"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+    <!-- for DataTables -->
+    <script type="text/javascript" src="~/mdb/js/datatables.min.js" asp-append-version="true"></script>
+
+    <script type="text/javascript" src="~/datatables/DataTables/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="~/datatables/Buttons/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="~/datatables/JSZip/jszip.min.js"></script>
+    <script type="text/javascript" src="~/datatables/pdfmake/pdfmake.min.js"></script>
+    <script type="text/javascript" src="~/datatables/pdfmake/vfs_fonts.js"></script>
+    <script type="text/javascript" src="~/datatables/Buttons/js/buttons.html5.min.js"></script>
+    <script type="text/javascript" src="~/datatables/Buttons/js/buttons.print.min.js"></script>
+
+    <!-- Your custom scripts (optional) -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <!-- Shop admin scripts -->
+    <script src="~/js/shsite.js" asp-append-version="true"></script>
+    <!-- Super admin scripts -->
+    <script src="~/js/sasite.js" asp-append-version="true"></script>
+
+    <!-- Google Map API -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD4dXCD7qIUhWDCs-N2PZjFxe8v6l5hRWE" type="text/javascript"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

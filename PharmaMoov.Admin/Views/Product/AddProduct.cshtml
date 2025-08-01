@@ -1,0 +1,215 @@
+﻿@model PharmaMoov.Models.Product.Product
+
+@{
+    ViewData["Title"] = "Ajouter un produit";
+}
+
+<partial name="~/Views/Shared/_GenericModal.cshtml" />
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Ajouter un produit</h3>
+        </nav>
+
+        <div class="row mt-3 mb-3">
+            <div class="col-sm-6">
+                <a href="/Product" class="text-primary"><i class="fas fa-long-arrow-alt-left"></i> Retour</a>
+            </div>
+        </div>
+
+        <div class="card">
+
+            <form asp-action="AddProduct" method="post">
+
+                <div class="card-body">
+                    <div class="row">
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Nom du produit</label><label class="text-danger">*</label>
+                                <input type="text" class="form-control" placeholder="Nom du produit" asp-for="ProductName">
+                                <span asp-validation-for="ProductName" class="label-error text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <div class="form-row">
+                                    <div class="col">
+                                        <label>Prix (€)</label>
+                                        <input type="number" class="form-control" asp-for="ProductPrice" min="1" value="1" step="0.25" autocomplete="off">
+                                        <span asp-validation-for="ProductPrice" class="label-error text-danger small"></span>
+                                    </div>
+
+                                    <div class="col">
+                                        <label>Prix ​​de vente (€)</label>
+                                        <input type="number" class="form-control" asp-for="SalePrice" min="0" value="0" step="0.25" autocomplete="off">
+                                        <span asp-validation-for="SalePrice" class="label-error text-danger small"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3 mb-3">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Catégorie</label><label class="text-danger">*</label><br />
+                                <select class="browser-default selectpicker" asp-for="ProductCategoryId"
+                                        asp-items="@(new SelectList(ViewBag.ProductCategories, "ProductCategoryId", "ProductCategoryName"))">
+                                    <option value="" disabled selected>Select an option</option>
+                                </select>
+                                <span asp-validation-for="ProductCategoryId" class="label-error text-danger small ProductCategoryIdValidation"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <div class="form-row">
+                                    <div class="col">
+                                        <label>T.V.A</label>
+                                        <input type="number" class="form-control" asp-for="ProductTaxValue" min="0" value="0" step="0.1">
+                                        <span asp-validation-for="ProductTaxValue" class="label-error text-danger small"></span>
+                                    </div>
+
+                                    <div class="col">
+                                        <label>Unité / Poid</label>
+                                        <input type="text" class="form-control" placeholder="weight unit" asp-for="ProductUnit" />
+                                        <span asp-validation-for="ProductUnit" class="label-error text-danger small"></span>
+                                    </div>
+
+                                    <div class="col" hidden>
+                                        <label>Prix au kilo (€)</label>
+                                        <input type="number" class="form-control" asp-for="ProductPricePerKG" value="0">
+                                        <span asp-validation-for="ProductPricePerKG" class="label-error text-danger small"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3 mb-3">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Description</label><label class="text-danger">*</label>
+                                <textarea class="form-control" rows="5" asp-for="ProductDesc" onKeyDown="limitText(this.form.ProductDesc,this.form.countdown1,140);"
+                                          onKeyUp="limitText(this.form.ProductDesc,this.form.countdown1,140);"></textarea>
+                                <div>
+                                    <font size="1">
+                                        (Nombre de caractères maximum: 140)<br>
+                                        Il reste <input readonly type="text" name="countdown1" size="3" value="140"> caractères.
+                                    </font>
+                                </div>
+                                <span asp-validation-for="ProductDesc" class="text-danger small"></span>
+                            </div>
+
+                            @*<div class="form-group mt-4 mb-4">
+                                <label>Offre du moment</label>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" asp-for="IsSale">
+                                    <label class="custom-control-label" for="IsSale">Ceci est une offre du moment</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group mt-4 mb-4">
+                                <label>Produit invendu (proche de la date d'expiration)</label>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" asp-for="IsUnsold">
+                                    <label class="custom-control-label" for="IsUnsold">Produit invendu</label>
+                                </div>
+                            </div>*@
+
+                            <div class="form-group mt-4 mb-4">
+                                <label>Meilleur produit de vente</label>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" asp-for="IsProductFeature">
+                                    <label class="custom-control-label" for="IsProductFeature">Marquer comme produit le plus vendu</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group mt-4 mb-4">
+                                <label>Vérifiez si le produit est fragile (informations supplémentaires pour la livraison)</label>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" asp-for="IsFragile">
+                                    <label class="custom-control-label" for="IsFragile">Produit fragile</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Image du produit</label>
+                                <input type="text" asp-for="ProductIcon" style="display:none;" value="@ViewBag.DefaultIcon">
+
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <input type="file" class="custom-file-input" id="UploadProductIcon" accept="image/*">
+                                        <label class="custom-file-label" for="UploadProductIcon">Choisir fichier</label>
+                                    </div>
+                                    <span asp-validation-for="ProductIcon" class="text-danger small"></span>
+                                </div>
+                                <small class="form-text text-muted">
+                                    (Pré-requis : Type JPG/JPEG, PNG / Taille max. 150KB, Dimension 158px x 158px)
+                                </small>
+                                <div class="spinner-border" role="status" id="imageLoadingUploadProductIcon">
+                                    <span class="sr-only">Chargement...</span>
+                                </div>
+                                <img id="imgPrevUploadProductIcon" src="@ViewBag.DefaultIcon" style="width:158px;height:158px;display:block;" />
+                            </div>
+
+                            <div class="form-group mt-4 mb-4">
+                                <label>Statut du produit</label>
+                                <select class="browser-default selectpicker" asp-for="ProductStatus">
+                                    <option value="1">En stock</option>
+                                    <option value="2">Inactif</option>
+                                    <option value="3">Stock épuisé</option>
+                                </select>
+                                <span asp-validation-for="ProductStatus" class="label-error text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4 mb-4">
+                        <div class="col-sm-12">
+                            <a class="btn white-button mr-3 btn-padding" href="~/Product/">Annuler</a>
+                            <button class="btn login-button mr-3 btn-padding" type="submit">Sauvegarder</button>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+
+        $("#UploadProductIcon").change(function () {
+            validateProductImageFiles("UploadProductIcon");
+        });
+
+        $(document).ready(function () {
+            $("#imageLoadingUploadProductIcon").hide();
+            $(".spinner-border").hide();
+        });
+
+        $("#successBtn").on('click', function () {
+            window.location.replace(BASEPATH + "/Product/");
+        });
+
+        $("#ProductCategoryId").change(function () {
+            var value = $(this).val();
+            if (value == "") {
+                $(".ProductCategoryIdValidation").show();
+            }
+            else {
+                $(".ProductCategoryIdValidation").hide();
+            }
+        });
+    </script>
+}

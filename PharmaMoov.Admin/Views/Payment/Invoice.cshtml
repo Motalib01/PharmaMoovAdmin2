@@ -1,0 +1,162 @@
+﻿@using PharmaMoov.Models
+@model PaymentInvoiceModel
+
+@{
+    ViewData["Title"] = "PharmaMoov Invoice";
+    Layout = "~/Views/Shared/_Startup.cshtml";
+   
+}
+<style>
+    tr.noBorder td {
+        border: 0;
+        padding:10px;
+    }
+</style>
+<div class="row p-3 p-lg-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6">
+                <h5 class="font-weight-bold">PharmaMoov</h5>
+                <p class="m-0">TÉL: +33 06 789561 PHONE: +33 06 798791</p>
+                <p class="m-0">Champ de Mars, 5 Avenue Anatole France</p>
+            </div>
+            <div class="col-sm-6 d-flex justify-content-end">
+                <img src="~/img/logo.png" style="width: 15%;" />
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-sm-12 d-flex justify-content-end">
+                <h6 class="font-weight-bold">FACTURE: @Model.OrderReferenceID</h6>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-sm-8">
+                <table>
+                    <tr>
+                        <td>Nom du client: </td>
+                        <td class="pl-4"><span class="text-success font-weight-bold"> @Model.CustomerName</span></td>
+                    </tr>
+                    <tr>
+                        <td>Courriel : </td>
+                        <td class="pl-4">@Model.Email</td>
+                    </tr>
+                    <tr>
+                        <td>Numéro de contact : </td>
+                        <td class="pl-4">@Model.ContactNumber</td>
+                    </tr>
+                    <tr>
+                        <td>Adresse : </td>
+                        <td class="pl-4">@Model.Address</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-sm-4">
+                @{
+                    var oType = "Non disponible";
+                    if (Model.OrderType == (int)OrderDeliveryType.FORDELIVERY)
+                    {
+                        oType = "Livraison à domicile";
+                    }
+                }
+
+                <table class="w-100">
+                    <tr>
+                        <td>ID de référence : </td>
+                        <td class="text-right">@Model.OrderReferenceID</td>
+                    </tr>
+                    <tr>
+                        <td>Type de commande : </td>
+                        <td class="text-right">@oType</td>
+                    </tr>
+                    <tr>
+                        <td>Livraison effectuée : </td>
+                        <td class="text-right">@Model.PlacedDate.ToString("MM/dd/yyyy")</td>
+                    </tr>
+                    <tr>
+                        <td>Date de livraison : </td>
+                        <td class="text-right">@Model.DeliveryDate.ToString("MM/dd/yyyy")</td>
+                    </tr>
+                    <tr>
+                        <td>Statut : </td>
+                        <td class="text-right"><span class="text-warning font-weight-bold"> @Enum.GetName(typeof(OrderProgressStatus), @Model.OrderStatus)</span></td>
+                    </tr>
+                    <tr>
+                        <td>Montant dû : </td>
+                        <td class="text-right"><span class="font-weight-bold"> &euro; @Model.OrderSubTotalAmount</span></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="row mt-5 mb-5">
+            <div class="col-sm-12">
+                <div class="table-responsive-sm">
+                    <table id="dtInvoice" class="table table-striped" width="100%">
+                        <thead class="thead-light">
+                            <tr>
+                                <th class="th-sm font-weight-bold">
+                                    Nom de l'article
+                                </th>
+                                <th class="th-sm font-weight-bold">
+                                    Quantité
+                                </th>
+                                <th class="th-sm font-weight-bold">
+                                    Prix unitaire
+                                </th>
+                                <th class="th-sm font-weight-bold">
+                                    Sous-total (&euro;)
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                           
+                            @foreach (var item in Model.OrderItemListModel)
+                            {
+                                <tr>
+                                    <td>@item.ProductName</td>
+                                    <td>@item.ProductQuantity</td>
+                                    <td>@item.ProductPrice</td>
+                                    <td>@item.SubTotal</td>
+                                </tr>
+                            }
+                            <tr class="noBorder"  style="background-color:transparent;">
+                                <td class="th-sm font-weight-bold" colspan="3" style="text-align:right">Sous-total :</td>
+                                <td>@Model.OrderSubTotalAmount</td>
+                            </tr>
+                            <tr class="noBorder" style="background-color:transparent">
+                                <td class="th-sm font-weight-bold" colspan="3" style="text-align:right">V.A.T. (@Model.OrderItemListModel.FirstOrDefault().ProductTaxValue %):</td>
+                                <td>@Model.OrderVatAmount</td>
+                            </tr>
+                            <tr class="noBorder" style="background-color:transparent">
+                                <td class="th-sm font-weight-bold" colspan="3" style="text-align:right">Frais de livraison :</td>
+                                <td>@Model.OrderDeliveryFee</td>
+                            </tr>
+                            <tr style="background-color:transparent">
+                                <td class="th-sm font-weight-bold" colspan="3" style="text-align:right">Total de :</td>
+                                <td>@Model.OrderGrossAmount</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<footer class="page-footer font-small pt-4 text-center">
+    <div class="footer-copyright py-3 text-black-50">
+        Champ de Mars, 5 Avenue Anatole France, 75007, Paris France, | +33 0257979 | pharmamoov2021@gmail.com
+    </div>
+</footer>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            window.print();
+        });
+    </script>
+}

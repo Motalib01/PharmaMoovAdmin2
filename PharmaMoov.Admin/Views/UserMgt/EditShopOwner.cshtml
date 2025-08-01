@@ -1,0 +1,179 @@
+﻿@model PharmaMoov.Models.Shop.PharmacyOwner
+@{
+    ViewData["Title"] = "Modifier la fiche commerçant";
+    Layout = "~/Views/Shared/_SALayout.cshtml";
+}
+<partial name="~/Views/Shared/_GenericModal.cshtml" />
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Modifier la fiche commerçant</h3>
+        </nav>
+        <form method="post" asp-action="EditShopOwner">
+            <div class="row mt-3 mb-3">
+                <div class="col-sm-6">
+                    <a href="~/UserMgt/ShopOwners" class="text-primary"><i class="fas fa-long-arrow-alt-left"></i> Retour</a>
+                </div>
+
+                <div class="col-sm-6 d-flex justify-content-end">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="IsActive">
+                        <label class="custom-control-label red-text font-weight-bold" for="IsActive" id="lblActive">Inactif</label>
+                        <input type="text" asp-for="IsEnabled" style="display: none;" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <div class="form-group row required mt-4 mb-4">
+                        <div class="col-sm-2">
+                            <img id="imgPrevUploadShopIcon" class="img-fluid rounded-circle" style="width:100px;height:100px;display:none;" />
+                            <input type="text" asp-for="ShopIcon" style="display:none;">
+                        </div>
+
+                        <div class="col-sm-10 d-flex align-items-center justify-content-left">
+                            <div class="input-group col-sm-6">
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="UploadShopIcon" accept="image/*">
+                                    <label class="custom-file-label" for="UploadShopIcon">Télécharger une photo</label>
+                                </div>
+                            </div>
+                            <div class="spinner-border" role="status" id="imageLoadingUploadShopIcon">
+                                <span class="sr-only">Chargement...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="text" asp-for="ShopRecordID" style="display:none;">
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Prenom</label>
+                                <input type="text" class="form-control" asp-for="OwnerFirstName" placeholder="Prenom" autocomplete="off">
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Nom</label>
+                                <input type="text" class="form-control" asp-for="OwnerLastName" placeholder="Nom" autocomplete="off">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="text" class="form-control" asp-for="Email" placeholder="Email" autocomplete="off">
+                                <span asp-validation-for="Email" class="label-error text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Numéro de téléphone mobile</label>
+                                <input type="number" class="form-control" asp-for="MobileNumber" onkeypress="return isNumberKey(event)" placeholder="Numéro de téléphone mobile" autocomplete="off">
+                                <span asp-validation-for="MobileNumber" class="label-error text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <div class="row mt-4 mb-4">
+                        <div class="col-sm-12">
+                            <a class="btn white-button mr-3 btn-padding" href="~/UserMgt/ShopOwners">Annuler</a>
+                            <button class="btn login-button mr-3 btn-padding" type="submit">Sauvegarder</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+
+        //JS to hide input upload
+        $(function () {
+            $("#upload_link").on('click', function (e) {
+                e.preventDefault();
+                $("#upload:hidden").trigger('click');
+            });
+        });
+
+        $("#UploadShopIcon").change(function () {
+            validateProductImageFiles("UploadShopIcon");
+        });
+
+        function isNumberKey(evt) {
+            var charCode = (evt.which) ? evt.which : event.keyCode
+            if (charCode > 31 && (charCode < 48 || charCode > 57))
+                return false;
+
+            return true;
+        }
+
+        $(document).ready(function () {
+            $("#imageLoadingUploadShopIcon").hide();
+            $(".spinner-border").hide();
+
+            var ShopImageUrl = $("#ShopIcon").val();
+            if (ShopImageUrl != "") {
+                $("#imgPrevUploadShopIcon").attr("src", ShopImageUrl);
+                $("#imgPrevUploadShopIcon").show();
+            }
+
+            if ($("#IsEnabled").val() == "True") {
+                $("#IsEnabled").val("true");
+                $('#IsActive').prop('checked', true);
+                $("#lblActive").text("Actif");
+                $("#lblActive").removeClass("red-text");
+            } else {
+                $("#IsEnabled").val("false");
+                $('#IsActive').prop('checked', false);
+                $("#lblActive").text("Inactif");
+                $("#lblActive").addClass("red-text");
+            }
+        });
+
+        //get the value of the enable button
+        $("#IsActive").change(function () {
+            if ($(this).prop("checked") == true) {
+                $("#IsEnabled").val("true");
+                $("#lblActive").text("Actif");
+                $("#lblActive").removeClass("red-text");
+            } else {
+                $("#IsEnabled").val("false");
+                $("#lblActive").text("Inactif");
+                $("#lblActive").addClass("red-text");
+            }
+        });
+
+      
+        var showModal = $("#ShowGenericModal").val();
+        if (showModal == 1) {
+            $("#GenericModal").modal('show');
+            $("#successIcon").show();
+            $("#successBtn").show();
+        }
+
+        if (showModal == 2) {
+            $("#GenericModal").modal('show');
+            $("#errorIcon").show();
+            $("#errorBtn").show();
+        }
+
+        $("#GenericModal").on('hidden.bs.modal', function () {
+            if (showModal == 1) {
+                window.location.replace("/UserMgt/ShopOwners");
+            }
+        });
+    </script>
+}

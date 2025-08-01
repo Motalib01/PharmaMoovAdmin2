@@ -1,0 +1,101 @@
+﻿@using PharmaMoov.Models.Shop
+@model List<ShopFAQdto>
+
+@{
+    ViewData["Title"] = "Liste de la FAQs";
+    Layout = "~/Views/Shared/_Startup.cshtml";
+}
+
+
+@*<div class="row p-3 p-lg-5">
+        <div class="col-sm-12">
+            <nav aria-label="breadcrumb">
+                <h3 class="mb-4">FAQs</h3>
+            </nav>
+            <img src="~/img/logo.png" style="margin:auto;display:block;"/>
+            <br />
+            <div class="card">
+                <div class="card-body">
+                    @if (Model != null)
+                    {
+                        <ul style="list-style-type:disc;">
+                            @foreach (ShopFAQdto sFaqDto in Model)
+                            {
+                                <li class="font-weight-bold justify-content-center">Q. @sFaqDto.Question</li>
+                                <li class="font-weight-normal font-italic justify-content-center">A. @sFaqDto.Answer</li>
+
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <span class="flex-center">Aucune FAQ définie</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12 p-3 mt-5 mb-5">
+            <div>
+                <img src="~/img/logo.png" style="margin:auto;display:block;" />
+                <br />
+            </div>
+            <div class="accordion" id="faqAccordion">
+                @{
+                    int ctr = 1;
+                    foreach (var faq in Model)
+                    {
+                        @if (faq.IsActive == true)
+                        {
+                            var show = "";
+                            <div class="card">
+                                <div class="card-header" id="heading-@faq.ShopFAQID">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-link black-text font-weight-bold w-100 text-left" style="text-transform: none;" type="button" data-toggle="collapse" data-target="#collapse-@faq.ShopFAQID" aria-expanded="true" aria-controls="collapse-@faq.ShopFAQID">
+                                            <i class="float-right fa fa-plus pharma-green-text"></i>
+                                            Question @ctr &nbsp; @faq.Question
+                                        </button>
+                                    </h2>
+                                </div>
+
+                                @if (ctr == 1)
+                                {
+                                    show = "show";
+                                }
+                                <div id="collapse-@faq.ShopFAQID" class="collapse @show" aria-labelledby="heading-@faq.ShopFAQID" data-parent="#faqAccordion">
+                                    <div class="card-body">
+                                        @faq.Answer
+                                    </div>
+                                </div>
+                            </div>
+                            <br />
+                            ctr++;
+                        }
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function(){
+            // Add minus icon for collapse element which is open by default
+            $(".collapse.show").each(function () {
+                $(this).prev(".card-header").find(".fa").addClass("fa-minus").removeClass("fa-plus");
+            });
+
+        // Toggle plus minus icon on show hide of collapse element
+        $(".collapse").on('show.bs.collapse', function(){
+            $(this).prev(".card-header").find(".fa").removeClass("fa-plus").addClass("fa-minus");
+        }).on('hide.bs.collapse', function(){
+            $(this).prev(".card-header").find(".fa").removeClass("fa-minus").addClass("fa-plus");
+        });
+        });
+    </script>
+}

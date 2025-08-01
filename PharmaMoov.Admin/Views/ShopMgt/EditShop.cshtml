@@ -1,0 +1,373 @@
+﻿@model PharmaMoov.Models.Shop.ShopProfile
+
+@{
+    ViewData["Title"] = "Modifier le profil du commerçant";
+    Layout = "~/Views/Shared/_SALayout.cshtml";
+}
+
+<partial name="~/Views/Shared/_GenericModal.cshtml" />
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+
+        <div id="closeablecard" class="card card-hover-shadow mt-4">
+            <div class="card-header bg-transparent border-bottom-0 mt-4">
+            </div>
+
+            <div class="card-body mt-n5">
+                <h5 class="card-title">
+                    Modifier la pharmacie
+                </h5>
+                <hr />
+
+                <form asp-controller="ShopMgt" asp-action="EditShop" method="post" role="form">
+
+                    <input type="text" asp-for="ShopRecordID" style="display:none;">
+
+                    <div class="form-group row required">
+                        <label class="col-sm-3 col-form-label control-label">Nom de la boutique :</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" placeholder="Nom de la boutique" asp-for="ShopName">
+                            <span asp-validation-for="ShopName" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    @*<div class="form-group row required">
+                        <label class="col-sm-3 col-form-label control-label">Raison sociale :</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" placeholder="Raison sociale" asp-for="ShopLegalName">
+                            <span asp-validation-for="ShopLegalName" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row required">
+                        <label class="col-sm-3 col-form-label control-label">Adresse du siège :</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" placeholder="Adresse du siège" asp-for="HeadquarterAddress">
+                            <span asp-validation-for="HeadquarterAddress" class="text-danger small"></span>
+                        </div>
+                    </div>*@
+
+                    <div class="form-group row required mt-4 mb-4">
+                        <label class="col-sm-3 col-form-label control-label">Description de la boutique :</label>
+                        <div class="col-sm-9">
+                            <textarea class="form-control" rows="5" asp-for="Description"></textarea>
+                            @*<textarea class="form-control" rows="4" asp-for="Description" onKeyDown="limitText(this.form.Description,this.form.countdown1,1000);"
+                                      onKeyUp="limitText(this.form.Description,this.form.countdown1,1000);"></textarea>
+                            <div>
+                                <font size="1">
+                                    (Nombre de caractères maximum : 1000)<br>
+                                    Il reste  <input readonly type="text" name="countdown1" size="3" value="1000"> caractères.
+                                </font>
+                            </div>*@
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row required mt-4 mb-4">
+                        <label class="col-sm-3 col-form-label control-label">Boutique Photo :</label>
+                        <input type="text" asp-for="ShopIcon" style="display:none;">
+
+                        <div class="col-sm-9">
+                            <div class="input-group">
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="UploadShopIcon" accept="image/*">
+                                    <label class="custom-file-label" for="UploadShopIcon">Choisir fichier</label>
+                                </div>
+                                <span asp-validation-for="ShopIcon" class="text-danger small"></span>
+                            </div>
+                            <small class="form-text text-muted">
+                                (Pré-requis : Type JPG/JPEG, PNG / Taille max. 150KB, Dimension 355px x 120px)
+                            </small>
+                            <div class="spinner-border" role="status" id="imageLoadingUploadShopIcon">
+                                <span class="sr-only">Chargement...</span>
+                            </div>
+                            <img id="imgPrevUploadShopIcon" style="width:355px;height:118px;display:block;" />
+                        </div>
+                    </div>
+
+                    @*<div class="form-group row required mt-4 mb-4">
+                        <label class="col-sm-3 col-form-label control-label">Catégorie de boutique :</label>
+                        <div class="col-sm-9">
+                            <select class="browser-default custom-select" asp-for="ShopCategoryId"
+                                    asp-items="@(new SelectList(ViewBag.ShopCategories, "ShopCategoryId", "Name"))">
+                                <option value="" disabled selected>Sélectionner une option</option>
+                            </select>
+                            <span asp-validation-for="ShopCategoryId" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row required mt-4 mb-4">
+                        <label class="col-sm-3 col-form-label control-label">Tags de la boutique :</label>
+                        <div class="col-sm-9">
+                            <textarea class="form-control" rows="1" asp-for="ShopTags" onKeyDown="limitText(this.form.ShopTags,this.form.countdown2,50);"
+                                      onKeyUp="limitText(this.form.ShopTags,this.form.countdown2,50);"></textarea>
+                            <div>
+                                <font size="1">
+                                    (Nombre de caractères maximum : 50)<br>
+                                    Il reste  <input readonly type="text" name="countdown2" size="3" value="50"> caractères.
+                                </font>
+                            </div>
+                            <span asp-validation-for="ShopTags" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row required mt-4 mb-4">
+                        <label class="col-sm-3 col-form-label control-label">Commission de livraison (%) :</label>
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" asp-for="DeliveryCommission" min="0" max="100">
+                            <span asp-validation-for="DeliveryCommission" class="text-danger small"></span>
+                        </div>
+
+                        <label class="col-sm-3 col-form-label control-label pr-md-0 pl-md-0">Commission de retrait (%) :</label>
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control" asp-for="PickupCommission" min="0" max="100">
+                            <span asp-validation-for="PickupCommission" class="text-danger small"></span>
+                        </div>
+                    </div>*@
+
+                    <div class="form-group row required mt-4 mb-4">
+                        <label class="col-sm-3 col-form-label control-label">Adresse électronique :</label>
+                        <div class="col-sm-9">
+                            <input type="email" class="form-control" placeholder="example@example.com" asp-for="Email">
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row required mt-4 mb-4">
+                        <label class="col-sm-3 col-form-label control-label">Prénom du pharmacien :</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" asp-for="OwnerFirstName" placeholder="Prénom">
+                            <span asp-validation-for="OwnerFirstName" class="text-danger small"></span>
+                        </div>
+
+                        <label class="col-sm-3 col-form-label control-label">Nom de famille du pharmacien :</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" asp-for="OwnerLastName" placeholder="nom de famille">
+                            <span asp-validation-for="OwnerLastName" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row required mt-4 mb-4">
+                        <label class="col-sm-3 col-form-label control-label">Téléphone fixe :</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" placeholder="+33 0176896545" asp-for="TelephoneNumber">
+                            <span asp-validation-for="TelephoneNumber" class="text-danger small"></span>
+                        </div>
+
+                        @*<label class="col-sm-2 col-form-label control-label">Téléphone mobile :</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" placeholder="+33 0698761300" asp-for="MobileNumber">
+                            <span asp-validation-for="MobileNumber" class="text-danger small"></span>
+                        </div>*@
+                    </div>
+
+                    <div class="form-group row required mt-4 mb-4">
+                        <label class="col-sm-3 col-form-label control-label">Adresse :</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" placeholder="Adresse" asp-for="Address">
+                            <span asp-validation-for="Address" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row mt-4 mb-4">
+                        <label class="col-sm-3 col-form-label control-label">Suite Adresse : (Optional)</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" placeholder="Suit Adresse" asp-for="SuiteAddress">
+                            <span asp-validation-for="SuiteAddress" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row required mt-4 mb-4">
+                        <label class="col-sm-3 col-form-label control-label">Code postal :</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" placeholder="Code postal" asp-for="PostalCode">
+                            <span asp-validation-for="PostalCode" class="text-danger small"></span>
+                        </div>
+
+                        <label class="col-sm-1 col-form-label control-label pr-md-0 pl-md-0">Ville :</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control" placeholder="Ville" asp-for="City">
+                            <span asp-validation-for="City" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row required mt-4 mb-4">
+                        <label class="col-sm-3 col-form-label control-label">Longitude :</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" placeholder="Latitude" asp-for="Longitude" readonly>
+                            <span asp-validation-for="Longitude" class="text-danger small"></span>
+                        </div>
+
+                        <label class="col-sm-1 col-form-label control-label pr-md-0 pl-md-0">Latitude :</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control" placeholder="Longitude" asp-for="Latitude" readonly>
+                            <span asp-validation-for="Latitude" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row mt-4 mb-4">
+                        <label class="col-sm-3"></label>
+                        <div class="col-sm-9">
+                            <div id="map" style="height: 300px;"></div>
+                        </div>
+                    </div>
+
+                    @*<div class="form-group row required mt-4 mb-4">
+                        <label class="col-sm-3 col-form-label control-label">Siret :</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" placeholder="Siret" asp-for="TradeLicenseNo">
+                            <span asp-validation-for="TradeLicenseNo" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row required mt-4 mb-4">
+                        <label class="col-sm-3 col-form-label control-label">Numéro de TVA :</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" placeholder="Numéro de TVA" asp-for="VATNumber">
+                            <span asp-validation-for="VATNumber" class="text-danger small"></span>
+                        </div>
+                    </div>*@
+
+                    <div class="form-group row required mt-4 mb-4">
+                        <label class="col-sm-3 col-form-label control-label">Numéro KBIS :</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" placeholder="Numéro KBIS" asp-for="KbisNumber">
+                            <span asp-validation-for="KbisNumber" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    @*<div class="form-group mt-4 mb-4">
+                        <label>Pharmacie populaire </label>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" asp-for="IsPopularPharmacy">
+                            <span asp-validation-for="IsPopularPharmacy" class="text-danger small"></span>
+                        </div>
+                    </div>*@
+
+                    <div class="form-group row mt-5 mb-5">
+                        <div class="col-sm-12 text-center">
+                            <a class="btn white-button mr-3 btn-padding" href="~/ShopMgt/">Annuler</a>
+                            <button type="submit" class="btn login-button mr-3 btn-padding" @*onclick='saveShop();'*@>Soumettre</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+<script type="text/javascript">
+
+         $("#successBtn").on('click', function () {
+             window.location.href  = '@Url.Action("Index", "ShopMgt")'
+         });
+
+        $("#UploadShopIcon").change(function () {
+            validateShopImageFiles("UploadShopIcon");
+        });
+
+        $(document).ready(function () {
+            //Preview of Uploaded Images
+            $("#imageLoadingUploadShopIcon").hide();
+            $(".spinner-border").hide();
+
+            var shopIcon = $("#ShopIcon").val();
+            $("#imgPrevUploadShopIcon").attr("src", shopIcon);
+            $("#imgPrevUploadShopIcon").show();
+        });
+
+        function saveShop() {
+            //validate shop address from Stuart API
+            var address = $("#Address").val();
+            var phone = $("#MobileNumber").val();
+
+            if (address != '') {
+                $.ajax(
+                    {
+                        type: 'GET',
+                        url: BASEPATH + '/ShopMgt/ValidateShopAddress',
+                        contentType: 'application/json',
+                        data: {
+                            '_shop': address,
+                            '_phone': phone
+                        },
+                        beforeSend: function () {
+                            $("#GenericModal").modal('show');
+                            $("#GenericModalTitle").text("Adresse en cours de validation");
+                            $("#savingGenericLoader").show();
+                            $("#errorIcon").hide();
+                            $("#successIcon").hide();
+                            $("#errorBtn").hide();
+                            $("#successBtn").hide();
+                        },
+                        success: function (result) {
+                            $("#GenericModal").modal('show');
+                            $("#savingGenericLoader").hide();
+
+                            if (result == true) {
+                                $("#savingGenericLoader").show();
+                                $("#successIcon").hide();
+                                $("#errorIcon").hide();
+                                $("#errorBtn").hide();
+                                $("#successBtn").hide();
+                                $("#GenericModalTitle").text("Votre adresse a été validée. En cours de sauvegarde");
+
+                                setTimeout(function () {
+                                    document.querySelector('form').submit();
+                                }, 3000);
+                            }
+                            else {
+                                $("#GenericModalTitle").text("L'adresse n'a pas été validée. Merci d'essayer à nouveau");
+                                $("#errorIcon").show();
+                                $("#errorBtn").show();
+                                $("#successBtn").hide();
+                            }
+                        },
+                        failed: function (e, x, h) {
+                            console.log(e); console.log(h); console.log(x);
+                        }
+                    }
+                );
+            }
+        }
+
+        (function () {
+            setTimeout(() => {
+
+                var ulat = parseFloat($('#Latitude').val());
+                var ulng = parseFloat($('#Longitude').val());
+                var location = { lat: ulat, lng: ulng };
+
+                var map = new google.maps.Map(
+                    document.getElementById('map'), { zoom: 17, center: location });
+                currentMarker = new google.maps.Marker({ position: location, map: map });
+
+                // set default values inside the modal
+                $('#Latitude').val(ulat);
+                $('#Longitude').val(ulng);
+
+                google.maps.event.addListener(map, "click", function (e) {
+
+                    //lat and lng is available in e object
+                    var latLng = e.latLng;
+
+                    // reset marker when clicked on map
+                    var newPosition = { lat: latLng.lat(), lng: latLng.lng() };
+                    currentMarker.setMap(null);
+                    currentMarker = new google.maps.Marker({ position: newPosition, map: map });
+
+                    // set form values inside the modal
+                    $('#Latitude').val(newPosition.lat);
+                    $('#Longitude').val(newPosition.lng);
+
+                });
+
+            }, 1000);
+        })();
+
+</script>
+}

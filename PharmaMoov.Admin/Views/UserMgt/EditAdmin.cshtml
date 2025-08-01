@@ -1,0 +1,183 @@
+﻿@model PharmaMoov.Models.Admin.EditAdminProfile
+
+@{
+    ViewData["Title"] = "Modifier l'administrateur";
+    Layout = "~/Views/Shared/_SALayout.cshtml";
+}
+
+<partial name="~/Views/Shared/_GenericModal.cshtml" />
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Modifier l'administrateur</h3>
+        </nav>
+
+        <form asp-action="EditAdmin" method="post">
+            <div class="row mt-3 mb-3">
+                <div class="col-sm-6">
+                    <a href="~/UserMgt/Admin" class="text-primary"><i class="fas fa-long-arrow-alt-left"></i> Retour</a>
+                </div>
+
+                <div class="col-sm-6 d-flex justify-content-end">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="IsActive">
+                        <label class="custom-control-label red-text font-weight-bold" for="IsActive" id="lblActive">Inactif</label>
+                        <input type="text" asp-for="IsEnabled" style="display: none;" />
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+
+                <div class="card-body">
+                    <div class="form-group row required mt-4 mb-4">
+                        <div class="col-sm-2">
+                            <img id="imgPrevUploadAdminIcon" class="img-fluid rounded-circle" style="width:100px;height:100px;display:none;" />
+                            <input type="text" asp-for="ImageUrl" style="display:none;">
+                        </div>
+
+                        <div class="col-sm-10 d-flex align-items-center justify-content-left">
+                            <div class="input-group col-sm-6">
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="UploadAdminIcon" accept="image/*">
+                                    <label class="custom-file-label" for="UploadAdminIcon">Télécharger une photo</label>
+                                </div>
+                            </div>
+                            <div class="spinner-border" role="status" id="imageLoadingUploadAdminIcon">
+                                <span class="sr-only">Chargement...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="text" asp-for="AdminId" style="display:none;">
+                    @*@Html.HiddenFor(a => a.Password)*@
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Prenom</label>
+                                <input type="text" class="form-control" placeholder="Prenom" asp-for="FirstName" autocomplete="off">
+                                <span asp-validation-for="FirstName" class="label-error text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Nom</label>
+                                <input type="text" class="form-control" placeholder="Nom" asp-for="LastName" autocomplete="off">
+                                <span asp-validation-for="LastName" class="label-error text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="text" class="form-control" placeholder="Email" asp-for="Email" autocomplete="off" readonly>
+                                <span asp-validation-for="Email" class="label-error text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Rôle</label>
+                                <select class="browser-default selectpicker" asp-for="UserTypeId">
+                                    <option value="2">Administrateur</option>
+                                    <option value="3">Salarié</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4 mb-4">
+                        <div class="col-sm-12">
+                            <a class="btn white-button mr-3 btn-padding" href="~/UserMgt/Admin">Annuler</a>
+                            <button class="btn login-button mr-3 btn-padding" type="submit">Sauvegarder</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+
+        //JS to hide input upload
+        $(function () {
+            $("#upload_link").on('click', function (e) {
+                e.preventDefault();
+                $("#upload:hidden").trigger('click');
+            });
+        });
+
+        $("#UploadAdminIcon").change(function () {
+            validateProductImageFiles("UploadAdminIcon");
+        });
+
+        $(document).ready(function () {
+            $("#imageLoadingUploadAdminIcon").hide();
+            $(".spinner-border").hide();
+
+            var AdminImageUrl = $("#ImageUrl").val();
+            if (AdminImageUrl != "") {
+                $("#imgPrevUploadAdminIcon").attr("src", AdminImageUrl);
+                $("#imgPrevUploadAdminIcon").show();
+            }
+
+            if ($("#IsEnabled").val() == "True") {
+                $("#IsEnabled").val("true");
+                $('#IsActive').prop('checked', true);
+                $("#lblActive").text("Actif");
+                $("#lblActive").removeClass("red-text");
+            } else {
+                $("#IsEnabled").val("false");
+                $('#IsActive').prop('checked', false);
+                $("#lblActive").text("Inactif");
+                $("#lblActive").addClass("red-text");
+            }
+        });
+
+        //get the value of the enable button
+        $("#IsActive").change(function () {
+            if ($(this).prop("checked") == true) {
+                $("#IsEnabled").val("true");
+                $("#lblActive").text("Actif");
+                $("#lblActive").removeClass("red-text");
+            } else {
+                $("#IsEnabled").val("false");
+                $("#lblActive").text("Inactif");
+                $("#lblActive").addClass("red-text");
+            }
+        });
+
+        //$("#successBtn").on('click', function () {
+        //    window.location.replace(BASEPATH + "/Admin/");
+        //});
+
+        var showModal = $("#ShowGenericModal").val();
+        if (showModal == 1) {
+            $("#GenericModal").modal('show');
+            $("#successIcon").show();
+            $("#successBtn").show();
+        }
+
+        if (showModal == 2) {
+            $("#GenericModal").modal('show');
+            $("#errorIcon").show();
+            $("#errorBtn").show();
+        }
+
+        $("#GenericModal").on('hidden.bs.modal', function () {
+            if (showModal == 1) {
+                window.location.replace("/UserMgt/Admin");
+            }
+        });
+    </script>
+}

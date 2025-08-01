@@ -1,0 +1,121 @@
+﻿@using PharmaMoov.Models.Orders
+@model IEnumerable<ShopOrderList>
+
+@{
+    ViewData["Title"] = "Historique de commandes";
+}
+
+@{
+    int totalOrders = Model.Count();
+    int totalCompleted = Model.Where(x => x.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.COMPLETED).Count();
+    int totalCancelled = Model.Where(x => x.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.CANCELORDER).Count() 
+        + Model.Where(x => x.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.REJECTED).Count();
+}
+
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Historique de commandes</h3>
+        </nav>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-12">
+
+                        <ul class="nav nav-tabs rounded-0" id="myTab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+                                   aria-selected="true"><h6>Toutes les commandes <span class="badge badge-default">@totalOrders</span></h6></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-success" id="completed-tab" data-toggle="tab" href="#completed" role="tab" aria-controls="profile"
+                                   aria-selected="false"><h6 class="text-success">Complété <span class="badge badge-success">@totalCompleted</span></h6></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-warning" id="cancelled-tab" data-toggle="tab" href="#cancelled" role="tab" aria-controls="profile"
+                                   aria-selected="false"><h6 class="text-danger">Refusé <span class="badge badge-danger">@totalCancelled</span></h6></a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="ordersTabContent">
+
+                            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                <div class="table-responsive-sm">
+                                    <table class="table table-striped mt-4" width="100%" id="dtHome">
+                                        <partial name="~/Views/Order/_OrderHistory.cshtml" model="@Model" />
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="completed" role="tabpanel" aria-labelledby="completed-tab">
+                                <div class="table-responsive-sm">
+                                    <table class="table table-striped mt-4" width="100%" id="dtCompleted">
+                                        <partial name="~/Views/Order/_OrderHistory.cshtml" model="@Model.Where(x => x.OrderProgressStatus == PharmaMoov.Models.OrderProgressStatus.COMPLETED)" />
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="cancelled" role="tabpanel" aria-labelledby="cancelled-tab">
+                                <div class="table-responsive-sm">
+                                    <table class="table table-striped mt-4" width="100%" id="dtCancelled">
+                                        <partial name="~/Views/Order/_OrderHistory.cshtml" model="@Model.Where(x => x.OrderProgressStatus != PharmaMoov.Models.OrderProgressStatus.COMPLETED)" />
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dtHome').DataTable({
+                autoWidth: false, info: true, "language": {
+                    "info": "Afficher de _START_ à _END_ sur _TOTAL_ entrées",
+                    "emptyTable": "Aucune donnée disponible dans le tableau",
+                    "infoEmpty": "Affichage 0 à 0 sur 0 entrées",
+                    "search": "Cherchez:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                }, lengthChange: false, "order": [[0, "desc"]] });
+            $('#dtCompleted').DataTable({
+                autoWidth: false, info: true, "language": {
+                    "info": "Afficher de _START_ à _END_ sur _TOTAL_ entrées",
+                    "emptyTable": "Aucune donnée disponible dans le tableau",
+                    "infoEmpty": "Affichage 0 à 0 sur 0 entrées",
+                    "search": "Cherchez:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                }, lengthChange: false, "order": [[0, "desc"]] });
+            $('#dtCancelled').DataTable({
+                autoWidth: false, info: true, "language": {
+                    "info": "Afficher de _START_ à _END_ sur _TOTAL_ entrées",
+                    "emptyTable": "Aucune donnée disponible dans le tableau",
+                    "infoEmpty": "Affichage 0 à 0 sur 0 entrées",
+                    "search": "Cherchez:",
+                    "paginate": {
+                        "first": "Premier",
+                        "last": "Dernier",
+                        "next": "Suivant",
+                        "previous": "Précédent"
+                    }
+                }, lengthChange: false, "order": [[0, "desc"]] });
+            $('.dataTables_length').addClass('bs-select');
+        });
+    </script>
+}

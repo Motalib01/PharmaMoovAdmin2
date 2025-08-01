@@ -1,0 +1,22 @@
+﻿@using PharmaMoov.Models.Shop
+@model TermsAndCondition
+@{
+    ViewData["Title"] = "Shop Termes et conditions ";
+    Layout = "~/Views/Shared/_Startup.cshtml";
+}
+
+
+<div class="row p-3 p-lg-5">
+    <div class="col-sm-12">
+        <nav aria-label="breadcrumb">
+            <h3 class="mb-4">Shop Termes et conditions </h3>
+        </nav>
+        <img src="~/img/logo.png" style="margin:auto;display:block;" />
+        <br />
+        <div class="card">
+            <div class="card-body">
+                @Html.Raw(Model.TermsAndConditionBody)
+            </div>
+        </div>
+    </div>
+</div>
